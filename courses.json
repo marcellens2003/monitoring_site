@@ -1,0 +1,684 @@
+{
+  "undergraduate_courses": [
+    {
+      "code": "EMA309D",
+      "title": "ASSESSMENT IN MATHEMATICS EDUCATION",
+      "full": "EMA309D - ASSESSMENT IN MATHEMATICS EDUCATION"
+    },
+    {
+      "code": "EIT201",
+      "title": "LEARNING THEORIES FOR TEACHING WITH COMPUTER",
+      "full": "EIT201 - LEARNING THEORIES FOR TEACHING WITH COMPUTER"
+    },
+    {
+      "code": "ECD101D",
+      "title": "DRAWING AND RENDERING 1",
+      "full": "ECD101D - DRAWING AND RENDERING 1"
+    },
+    {
+      "code": "INF109D",
+      "title": "MATHEMATICS FOR COMPUTING 1",
+      "full": "INF109D - MATHEMATICS FOR COMPUTING 1"
+    },
+    {
+      "code": "EIT101D",
+      "title": "FUNDAMENTALS OF OFFICE SUIT IN EDUCATION",
+      "full": "EIT101D - FUNDAMENTALS OF OFFICE SUIT IN EDUCATION"
+    },
+    {
+      "code": "PHY103D",
+      "title": "GENERAL PHYSICS 1 (PRACTICAL)",
+      "full": "PHY103D - GENERAL PHYSICS 1 (PRACTICAL)"
+    },
+    {
+      "code": "CHE109D",
+      "title": "GENERAL CHEMISTRY (PRACTICAL)",
+      "full": "CHE109D - GENERAL CHEMISTRY (PRACTICAL)"
+    },
+    {
+      "code": "EIT404D",
+      "title": "MULTIMEDIA IN EDUCATION",
+      "full": "EIT404D - MULTIMEDIA IN EDUCATION"
+    },
+    {
+      "code": "INF413D",
+      "title": "INFORMATION SYSTEM SECURITY AND MANAGEMENT",
+      "full": "INF413D - INFORMATION SYSTEM SECURITY AND MANAGEMENT"
+    },
+    {
+      "code": "INF411D",
+      "title": "PROFESSIONAL COMPUTING",
+      "full": "INF411D - PROFESSIONAL COMPUTING"
+    },
+    {
+      "code": "INF405D",
+      "title": "E-COMMERCE 1",
+      "full": "INF405D - E-COMMERCE 1"
+    },
+    {
+      "code": "INF403D",
+      "title": "MOBILE AND DISTRIBUTED COMPUTING",
+      "full": "INF403D - MOBILE AND DISTRIBUTED COMPUTING"
+    },
+    {
+      "code": "INF401D",
+      "title": "INTRODUCTING TO MULTIMEDIA COMPUTING",
+      "full": "INF401D - INTRODUCTING TO MULTIMEDIA COMPUTING"
+    },
+    {
+      "code": "INF313D",
+      "title": "WEB TECHNOLOGY II",
+      "full": "INF313D - WEB TECHNOLOGY II"
+    },
+    {
+      "code": "EIT303D",
+      "title": "ASSESSMENT IN INFORMATION TECHNOLOGY EDUCATION",
+      "full": "EIT303D - ASSESSMENT IN INFORMATION TECHNOLOGY EDUCATION"
+    },
+    {
+      "code": "INF315D",
+      "title": "DISCRETE MATHEMATICS",
+      "full": "INF315D - DISCRETE MATHEMATICS"
+    },
+    {
+      "code": "BIO201AD",
+      "title": "BASIC SOIL SCIENCE",
+      "full": "BIO201AD - BASIC SOIL SCIENCE"
+    },
+    {
+      "code": "ECO103D",
+      "title": "PRINCIPLES OF MICROECONOMICS",
+      "full": "ECO103D - PRINCIPLES OF MICROECONOMICS"
+    },
+    {
+      "code": "CMS107D",
+      "title": "COMMUNICATION SKILLS 1",
+      "full": "CMS107D - COMMUNICATION SKILLS 1"
+    },
+    {
+      "code": "EDF102D",
+      "title": "SOCIAL AND PHILOSOPHICAL FOUNDATIONS OF EDUCATION",
+      "full": "EDF102D - SOCIAL AND PHILOSOPHICAL FOUNDATIONS OF EDUCATION"
+    },
+    {
+      "code": "ILT101D",
+      "title": "INFORMATION LITERACY",
+      "full": "ILT101D - INFORMATION LITERACY"
+    },
+    {
+      "code": "ASP101D",
+      "title": "AFRICAN STUDIES",
+      "full": "ASP101D - AFRICAN STUDIES"
+    },
+    {
+      "code": "ECD105D",
+      "title": "LETTERING AND TYPOGRAPHY",
+      "full": "ECD105D - LETTERING AND TYPOGRAPHY"
+    },
+    {
+      "code": "EGA103D",
+      "title": "BASIC DESIGN AND COLOUR PSYCHOLOGY",
+      "full": "EGA103D - BASIC DESIGN AND COLOUR PSYCHOLOGY"
+    },
+    {
+      "code": "INF107D",
+      "title": "SOFTWARE SUITE",
+      "full": "INF107D - SOFTWARE SUITE"
+    },
+    {
+      "code": "INF101D",
+      "title": "INTRODUCTION TO COMPUTING",
+      "full": "INF101D - INTRODUCTION TO COMPUTING"
+    },
+    {
+      "code": "ECO101D",
+      "title": "PRINCIPLES OF MICROECONOMICS",
+      "full": "ECO101D - PRINCIPLES OF MICROECONOMICS"
+    },
+    {
+      "code": "INF105D",
+      "title": "INTRODUCTION TO MANAGEMENT",
+      "full": "INF105D - INTRODUCTION TO MANAGEMENT"
+    },
+    {
+      "code": "MAT101D",
+      "title": "ALGEBRA AND TRIGONOMETRY",
+      "full": "MAT101D - ALGEBRA AND TRIGONOMETRY"
+    },
+    {
+      "code": "BIO101D",
+      "title": "DIVERSITY OF LIVING ORGANISMS",
+      "full": "BIO101D - DIVERSITY OF LIVING ORGANISMS"
+    },
+    {
+      "code": "PHY101D",
+      "title": "GENERAL PHYSICS 1 (THEORY)",
+      "full": "PHY101D - GENERAL PHYSICS 1 (THEORY)"
+    },
+    {
+      "code": "SBU103D",
+      "title": "FOUNDATIONS OF ACCOUNTING I",
+      "full": "SBU103D - FOUNDATIONS OF ACCOUNTING I"
+    },
+    {
+      "code": "CHE107D",
+      "title": "GENERAL CHEMISTRY (BASIC GENERAL CHEMISTRY)",
+      "full": "CHE107D - GENERAL CHEMISTRY (BASIC GENERAL CHEMISTRY)"
+    },
+    {
+      "code": "EMA212D",
+      "title": "PCK IN MATHEMATHEMATICS",
+      "full": "EMA212D - PCK IN MATHEMATHEMATICS"
+    },
+    {
+      "code": "EIT203D",
+      "title": "MODALITIES OF TECHNOLOGY FOR TEACHING AND TRAINING",
+      "full": "EIT203D - MODALITIES OF TECHNOLOGY FOR TEACHING AND TRAINING"
+    },
+    {
+      "code": "INF209D",
+      "title": "STATISTICAL MODELING",
+      "full": "INF209D - STATISTICAL MODELING"
+    },
+    {
+      "code": "ECD207D",
+      "title": "INDUSTRIAL PRINTING TECHNOLOGY I",
+      "full": "ECD207D - INDUSTRIAL PRINTING TECHNOLOGY I"
+    },
+    {
+      "code": "INF219D",
+      "title": "OPERATING SYSTEMS",
+      "full": "INF219D - OPERATING SYSTEMS"
+    },
+    {
+      "code": "EIT211D",
+      "title": "METHODS OF TEACHING IT",
+      "full": "EIT211D - METHODS OF TEACHING IT"
+    },
+    {
+      "code": "INF215D",
+      "title": "DATABASE MANAGEMENT I",
+      "full": "INF215D - DATABASE MANAGEMENT I"
+    },
+    {
+      "code": "INF211D",
+      "title": "COMPUTER ARCHITECTURE",
+      "full": "INF211D - COMPUTER ARCHITECTURE"
+    },
+    {
+      "code": "ECD201D",
+      "title": "INDUSTRIAL PRINTING TECHNOLOGY I",
+      "full": "ECD201D - INDUSTRIAL PRINTING TECHNOLOGY I"
+    },
+    {
+      "code": "EIT201D",
+      "title": "LEARNING THEORIES FOR TEACHING WITH COMPUTER",
+      "full": "EIT201D - LEARNING THEORIES FOR TEACHING WITH COMPUTER"
+    },
+    {
+      "code": "INF217D",
+      "title": "PROGRAMING AND PROBLEM ANALYSIS",
+      "full": "INF217D - PROGRAMING AND PROBLEM ANALYSIS"
+    },
+    {
+      "code": "EMA208D",
+      "title": "METHODS OF TEACHING SHS MATHS",
+      "full": "EMA208D - METHODS OF TEACHING SHS MATHS"
+    },
+    {
+      "code": "ECO201D",
+      "title": "ELEMENTS OF MICRO ECONOMICS",
+      "full": "ECO201D - ELEMENTS OF MICRO ECONOMICS"
+    },
+    {
+      "code": "EMA202D",
+      "title": "ADVANCE ALGEBRA AND CALCULUS",
+      "full": "EMA202D - ADVANCE ALGEBRA AND CALCULUS"
+    },
+    {
+      "code": "MAT203D",
+      "title": "FURTHER CALCULUS",
+      "full": "MAT203D - FURTHER CALCULUS"
+    },
+    {
+      "code": "EMA201D",
+      "title": "NATURE OF MATHEMATICS",
+      "full": "EMA201D - NATURE OF MATHEMATICS"
+    },
+    {
+      "code": "EMA209D",
+      "title": "INTRODUCTORY STATICS I",
+      "full": "EMA209D - INTRODUCTORY STATICS I"
+    },
+    {
+      "code": "PHY205D",
+      "title": "NEWTONIAN MECHANICS (PRATICAL)",
+      "full": "PHY205D - NEWTONIAN MECHANICS (PRATICAL)"
+    },
+    {
+      "code": "BIO204D",
+      "title": "MORPHOLOGY AND ANATOMY OF HIGHER PLANTS",
+      "full": "BIO204D - MORPHOLOGY AND ANATOMY OF HIGHER PLANTS"
+    },
+    {
+      "code": "ESC220D",
+      "title": "METHODS OF TEACHING PHYSICS",
+      "full": "ESC220D - METHODS OF TEACHING PHYSICS"
+    },
+    {
+      "code": "PHY207D",
+      "title": "METHODS OF TEACHING PHYSICS",
+      "full": "PHY207D - METHODS OF TEACHING PHYSICS"
+    },
+    {
+      "code": "PHY203D",
+      "title": "INTRODUCTORY ATOMIC PHYSICS, HEAT AND OPTICS",
+      "full": "PHY203D - INTRODUCTORY ATOMIC PHYSICS, HEAT AND OPTICS"
+    },
+    {
+      "code": "PHY201D",
+      "title": "NEWTONIAN MECHANICS",
+      "full": "PHY201D - NEWTONIAN MECHANICS"
+    },
+    {
+      "code": "EPS212D",
+      "title": "SPECIAL EDUCATION",
+      "full": "EPS212D - SPECIAL EDUCATION"
+    },
+    {
+      "code": "PHL205D",
+      "title": "CRITICAL THINKING AND LOGICAL REASONING",
+      "full": "PHL205D - CRITICAL THINKING AND LOGICAL REASONING"
+    },
+    {
+      "code": "ESC208D",
+      "title": "METHODS OF TEACHING BIOLOGY",
+      "full": "ESC208D - METHODS OF TEACHING BIOLOGY"
+    },
+    {
+      "code": "ESC209D",
+      "title": "METHODS OF TEACHING CHEMISTRY",
+      "full": "ESC209D - METHODS OF TEACHING CHEMISTRY"
+    },
+    {
+      "code": "ESC201D",
+      "title": "NATURE OF SCIENCE",
+      "full": "ESC201D - NATURE OF SCIENCE"
+    },
+    {
+      "code": "CHE207D",
+      "title": "PRATICAL PHYSICAL CHEMISTRY I",
+      "full": "CHE207D - PRATICAL PHYSICAL CHEMISTRY I"
+    },
+    {
+      "code": "BIO202D",
+      "title": "CELL AND TISSUE ORGANIZATION",
+      "full": "BIO202D - CELL AND TISSUE ORGANIZATION"
+    },
+    {
+      "code": "CHE203D",
+      "title": "PHYSICAL CHEMISTRY I",
+      "full": "CHE203D - PHYSICAL CHEMISTRY I"
+    },
+    {
+      "code": "CHE201D",
+      "title": "MAIN GROUP CHEMISTRY",
+      "full": "CHE201D - MAIN GROUP CHEMISTRY"
+    },
+    {
+      "code": "EIT304D",
+      "title": "INTERNET AND WEB PEDAGOGIES",
+      "full": "EIT304D - INTERNET AND WEB PEDAGOGIES"
+    },
+    {
+      "code": "INF304D",
+      "title": "WEB TECHNOLOGY II",
+      "full": "INF304D - WEB TECHNOLOGY II"
+    },
+    {
+      "code": "INF213D",
+      "title": "WEB TECHNOLOGY",
+      "full": "INF213D - WEB TECHNOLOGY"
+    },
+    {
+      "code": "PHY303D",
+      "title": "THERMAL PHYSICS",
+      "full": "PHY303D - THERMAL PHYSICS"
+    },
+    {
+      "code": "ESC306D",
+      "title": "SCIENCE TECHNOLOGY AND SOCIETY",
+      "full": "ESC306D - SCIENCE TECHNOLOGY AND SOCIETY"
+    },
+    {
+      "code": "ESC327D",
+      "title": "PCK IN PHYSICS",
+      "full": "ESC327D - PCK IN PHYSICS"
+    },
+    {
+      "code": "ESC312D",
+      "title": "PCK IN CHEMISTRY",
+      "full": "ESC312D - PCK IN CHEMISTRY"
+    },
+    {
+      "code": "ESC316D",
+      "title": "PCK IN BIOLOGY",
+      "full": "ESC316D - PCK IN BIOLOGY"
+    },
+    {
+      "code": "MBB309D",
+      "title": "INTRODUCTION TO MOLECULAR GENETICS",
+      "full": "MBB309D - INTRODUCTION TO MOLECULAR GENETICS"
+    },
+    {
+      "code": "CHE325D",
+      "title": "STEREOCHEMISTRY",
+      "full": "CHE325D - STEREOCHEMISTRY"
+    },
+    {
+      "code": "ESC335D",
+      "title": "DEVELOPMENT OF SCIENCE TEACHING MATERIALS",
+      "full": "ESC335D - DEVELOPMENT OF SCIENCE TEACHING MATERIALS"
+    },
+    {
+      "code": "BIO201D",
+      "title": "BASIC SOIL SCIENCE",
+      "full": "BIO201D - BASIC SOIL SCIENCE"
+    },
+    {
+      "code": "CHE301D",
+      "title": "ANALYTICAL CHEMISTRY",
+      "full": "CHE301D - ANALYTICAL CHEMISTRY"
+    },
+    {
+      "code": "PHY309D",
+      "title": "ATOMIC AND MODERN PHYSICS",
+      "full": "PHY309D - ATOMIC AND MODERN PHYSICS"
+    },
+    {
+      "code": "EMA399D",
+      "title": "RESEARCH METHODS IN MATH",
+      "full": "EMA399D - RESEARCH METHODS IN MATH"
+    },
+    {
+      "code": "EMA335D",
+      "title": "DEVELOPMENT OF INSTRUCTIONAL MATERIALS IN MATHS",
+      "full": "EMA335D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS IN MATHS"
+    },
+    {
+      "code": "STA303D",
+      "title": "STATISTICAL METHODS I",
+      "full": "STA303D - STATISTICAL METHODS I"
+    },
+    {
+      "code": "MAT301D",
+      "title": "ADVANCED CALCULUS I",
+      "full": "MAT301D - ADVANCED CALCULUS I"
+    },
+    {
+      "code": "INF305D",
+      "title": "NETWORK COMPUTING",
+      "full": "INF305D - NETWORK COMPUTING"
+    },
+    {
+      "code": "ECD305D",
+      "title": "IDENTITY DESIGN AND BRANDING",
+      "full": "ECD305D - IDENTITY DESIGN AND BRANDING"
+    },
+    {
+      "code": "INF307D",
+      "title": "SOFTWARE ENGINEERING",
+      "full": "INF307D - SOFTWARE ENGINEERING"
+    },
+    {
+      "code": "EIT302D",
+      "title": "DEVELOPMENT OF INSTRUCTIONAL MATERIALS WITH COMPUTERS",
+      "full": "EIT302D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS WITH COMPUTERS"
+    },
+    {
+      "code": "ECO301SD",
+      "title": "INTERMEDIATE MICROECONOMICS",
+      "full": "ECO301SD - INTERMEDIATE MICROECONOMICS"
+    },
+    {
+      "code": "ECD309D",
+      "title": "PACKAGING AND ENVIRONMENTAL GRAPHICS",
+      "full": "ECD309D - PACKAGING AND ENVIRONMENTAL GRAPHICS"
+    },
+    {
+      "code": "INF309D",
+      "title": "INFORMATION SYSTEMS MANAGEMENT",
+      "full": "INF309D - INFORMATION SYSTEMS MANAGEMENT"
+    },
+    {
+      "code": "ESC311D",
+      "title": "ASSESSMENT IN SCIENCE EDUCATION",
+      "full": "ESC311D - ASSESSMENT IN SCIENCE EDUCATION"
+    },
+    {
+      "code": "ESC309D",
+      "title": "ASSESSMENT IN MATHEMATICS",
+      "full": "ESC309D - ASSESSMENT IN MATHEMATICS"
+    },
+    {
+      "code": "SOC101D",
+      "title": "INTRODUCTION TO SOCIOLOGY I",
+      "full": "SOC101D - INTRODUCTION TO SOCIOLOGY I"
+    },
+    {
+      "code": "SBU101D",
+      "title": "FUNDAMENTALS OF BUSINESS I",
+      "full": "SBU101D - FUNDAMENTALS OF BUSINESS I"
+    },
+    {
+      "code": "RLH101D",
+      "title": "INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
+      "full": "RLH101D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES"
+    },
+    {
+      "code": "EBS179D",
+      "title": "INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
+      "full": "EBS179D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES"
+    },
+    {
+      "code": "HIS110D",
+      "title": "WORLD CIVILIZATIONS UP TO 5TH CENTURY BC",
+      "full": "HIS110D - WORLD CIVILIZATIONS UP TO 5TH CENTURY BC"
+    },
+    {
+      "code": "GHL107TD",
+      "title": "GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (TWI)",
+      "full": "GHL107TD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (TWI)"
+    },
+    {
+      "code": "GHL107GAD",
+      "title": "GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (GA)",
+      "full": "GHL107GAD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (GA)"
+    },
+    {
+      "code": "GHL107FD",
+      "title": "GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (MFANTSE)",
+      "full": "GHL107FD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (MFANTSE)"
+    },
+    {
+      "code": "GHL107ED",
+      "title": "GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (EWE)",
+      "full": "GHL107ED - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (EWE)"
+    },
+    {
+      "code": "GEO103BD",
+      "title": "THEMATIC GEOGRAPHY OF GHANA",
+      "full": "GEO103BD - THEMATIC GEOGRAPHY OF GHANA"
+    },
+    {
+      "code": "GEO101D",
+      "title": "ELEMENTS OF PHYSICAL GEOGRAPHY",
+      "full": "GEO101D - ELEMENTS OF PHYSICAL GEOGRAPHY"
+    },
+    {
+      "code": "EBS161D",
+      "title": "SOCIOLOGY OF THE FAMILY",
+      "full": "EBS161D - SOCIOLOGY OF THE FAMILY"
+    },
+    {
+      "code": "EBS157D",
+      "title": "HUMAN-LAND ISSUES IN SOCIAL STUDIES",
+      "full": "EBS157D - HUMAN-LAND ISSUES IN SOCIAL STUDIES"
+    },
+    {
+      "code": "EBS145D",
+      "title": "ELEMENTARY GEOMETRY",
+      "full": "EBS145D - ELEMENTARY GEOMETRY"
+    },
+    {
+      "code": "EBS133D",
+      "title": "THE USE OF ENGLISH",
+      "full": "EBS133D - THE USE OF ENGLISH"
+    },
+    {
+      "code": "ENG101D",
+      "title": "THE USE OF ENGLISH",
+      "full": "ENG101D - THE USE OF ENGLISH"
+    },
+    {
+      "code": "EBS126D",
+      "title": "INTRODUCTION TO SOCIAL STUDIES",
+      "full": "EBS126D - INTRODUCTION TO SOCIAL STUDIES"
+    },
+    {
+      "code": "EBS125D",
+      "title": "PRINCIPLES AND PRACTICE OF EDUCATION",
+      "full": "EBS125D - PRINCIPLES AND PRACTICE OF EDUCATION"
+    },
+    {
+      "code": "EBS123D",
+      "title": "PHILOSOPHICAL AND PSYCHOLOGICAL FOUNDATIONS OF RME",
+      "full": "EBS123D - PHILOSOPHICAL AND PSYCHOLOGICAL FOUNDATIONS OF RME"
+    },
+    {
+      "code": "EBS121D",
+      "title": "STUDIES IN AFRICAN POETRY",
+      "full": "EBS121D - STUDIES IN AFRICAN POETRY"
+    },
+    {
+      "code": "EBS120TD",
+      "title": "LINGUISTICS OF THE GHANAIAN LANGUAGE (TWI)",
+      "full": "EBS120TD - LINGUISTICS OF THE GHANAIAN LANGUAGE (TWI)"
+    },
+    {
+      "code": "EBS120GAD",
+      "title": "LINGUISTICS OF THE GHANAIAN LANGUAGE (GA)",
+      "full": "EBS120GAD - LINGUISTICS OF THE GHANAIAN LANGUAGE (GA)"
+    },
+    {
+      "code": "EBS120FD",
+      "title": "LINGUISTICS OF THE GHANAIAN LANGUAGE (MFANTSE)",
+      "full": "EBS120FD - LINGUISTICS OF THE GHANAIAN LANGUAGE (MFANTSE)"
+    },
+    {
+      "code": "EBS120ED",
+      "title": "LINGUISTICS OF THE GHANAIAN LANGUAGE (EWE)",
+      "full": "EBS120ED - LINGUISTICS OF THE GHANAIAN LANGUAGE (EWE)"
+    },
+    {
+      "code": "EBS116TD",
+      "title": "GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (TWI)",
+      "full": "EBS116TD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (TWI)"
+    },
+    {
+      "code": "EBS116GAD",
+      "title": "GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (GA)",
+      "full": "EBS116GAD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (GA)"
+    },
+    {
+      "code": "EBS116FD",
+      "title": "GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (MFANTSE)",
+      "full": "EBS116FD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (MFANTSE)"
+    },
+    {
+      "code": "EBS116ED",
+      "title": "GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (EWE)",
+      "full": "EBS116ED - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (EWE)"
+    },
+    {
+      "code": "EBS114D",
+      "title": "GENERAL BIOLOGY THEORY I",
+      "full": "EBS114D - GENERAL BIOLOGY THEORY I"
+    },
+    {
+      "code": "EBS112D",
+      "title": "FUNDAMENTALS IN HOME ECONOMICS",
+      "full": "EBS112D - FUNDAMENTALS IN HOME ECONOMICS"
+    },
+    {
+      "code": "EBS109D",
+      "title": "FUNDAMENTALS OF IT EDUCATION",
+      "full": "EBS109D - FUNDAMENTALS OF IT EDUCATION"
+    },
+    {
+      "code": "EBS108D",
+      "title": "LANGUAGE AND LINGUISTICS",
+      "full": "EBS108D - LANGUAGE AND LINGUISTICS"
+    },
+    {
+      "code": "EBS106D",
+      "title": "CHILD DEVELOPMENT AND LEARNING",
+      "full": "EBS106D - CHILD DEVELOPMENT AND LEARNING"
+    },
+    {
+      "code": "EBS105D",
+      "title": "CHILD AND ADOLESCENT DEVELOPMENT AND LEARNING",
+      "full": "EBS105D - CHILD AND ADOLESCENT DEVELOPMENT AND LEARNING"
+    },
+    {
+      "code": "EBS103D",
+      "title": "GENERAL BIOLOGY",
+      "full": "EBS103D - GENERAL BIOLOGY"
+    },
+    {
+      "code": "EBS102D",
+      "title": "COLLEGE ALGEBRA",
+      "full": "EBS102D - COLLEGE ALGEBRA"
+    },
+    {
+      "code": "EBS101D",
+      "title": "ELEMENTARY ALGEBRA",
+      "full": "EBS101D - ELEMENTARY ALGEBRA"
+    },
+    {
+      "code": "EAS106D",
+      "title": "THE CORE OF HISTORICAL KNOWLEDGE",
+      "full": "EAS106D - THE CORE OF HISTORICAL KNOWLEDGE"
+    },
+    {
+      "code": "EAS103D",
+      "title": "INTRODUCTION TO SECOND LANGUAGE LEARNING & TEACHING",
+      "full": "EAS103D - INTRODUCTION TO SECOND LANGUAGE LEARNING & TEACHING"
+    },
+    {
+      "code": "EAS102D",
+      "title": "MORALITY AND SOCIAL VALUES",
+      "full": "EAS102D - MORALITY AND SOCIAL VALUES"
+    },
+    {
+      "code": "BPS121D",
+      "title": "BASIC STATISTICS",
+      "full": "BPS121D - BASIC STATISTICS"
+    },
+    {
+      "code": "BPS113D",
+      "title": "PSYCHOLOGY OF HUMAN GROWTH AND DEVELOPMENT",
+      "full": "BPS113D - PSYCHOLOGY OF HUMAN GROWTH AND DEVELOPMENT"
+    },
+    {
+      "code": "BPS111D",
+      "title": "INTRODUCTION TO GENERAL PSYCHOLOGY",
+      "full": "BPS111D - INTRODUCTION TO GENERAL PSYCHOLOGY"
+    },
+    {
+      "code": "APS101D",
+      "title": "AFRICAN STUDIES",
+      "full": "APS101D - AFRICAN STUDIES"
+    }
+  ]
+}

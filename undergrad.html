@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            background-blend-mode: overlay; background-color: rgba(255,255,255,0.9);
+            min-height: 100vh;
+        }
+        body::before {
+            content: ''; position: fixed; top:0; left:0; right:0; bottom:0;
+            background: rgba(255,255,255,0.85); z-index: -1;
+        }
+
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 30px; padding: 20px 30px;
+            background: linear-gradient(135deg, #002147, #0056b3);
+            color: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-height: 140px;
+        }
+        .logo-container { flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+        .logo-left { margin-right:auto; }
+        .logo-right { margin-left:auto; }
+        .header-logo { height:100px; width:100px; object-fit:contain; border-radius:8px; padding:5px; }
+        .header-center { flex:1; text-align:center; padding:0 30px; min-width:300px; }
+        .header-center h1 { margin:0; font-size:28px; font-weight:bold; letter-spacing:1px; line-height:1.2; }
+        .header-center .subtitle { margin:8px 0 0; font-size:20px; opacity:0.95; font-weight:500; }
+
+        .container {
+            max-width: 700px; margin: auto; background: #ffffff;
+            padding: 25px 30px; border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15); border:1px solid rgba(0,123,255,0.1);
+        }
+        h2 { text-align:center; margin-bottom:25px; color:#002147; border-bottom:2px solid #0056b3; padding-bottom:10px; }
+
+        .field-label { font-weight:bold; margin-top:18px; color:#333; }
+        input, select, textarea {
+            width:100%; padding:11px; margin-top:6px; border:1px solid #ccc;
+            border-radius:6px; font-size:15px; transition: border 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #0056b3; outline:none; box-shadow:0 0 0 2px rgba(0,123,255,0.25);
+        }
+        textarea { resize:vertical; min-height:100px; }
+
+        /* 📌 SEARCHABLE DROPDOWN STYLES (shared) */
+        .searchable-select-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: 6px;
+        }
+        .searchable-input {
+            width: 100%;
+            padding: 11px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            background-color: white;
+            transition: border 0.3s;
+            cursor: text;
+        }
+        .searchable-input:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .dropdown-options {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            max-height: 280px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            z-index: 999;
+            display: none;
+        }
+        .dropdown-options.show {
+            display: block;
+        }
+        .option-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+            font-size: 15px;
+        }
+        .option-item:last-child {
+            border-bottom: none;
+        }
+        .option-item:hover {
+            background-color: #e6f2ff;
+        }
+        .option-item.selected {
+            background-color: #cce5ff;
+            font-weight: 500;
+        }
+        .no-result {
+            padding: 12px;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .radio-container {
+            margin-top:8px; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e9ecef;
+        }
+        .radio-container label {
+            display:inline-flex; align-items:center; gap:8px; font-weight:normal;
+            cursor:pointer; margin-bottom:8px; padding:5px 10px; border-radius:4px; transition:background 0.2s;
+        }
+        .radio-container label:hover { background:#e9ecef; }
+        .radio-container input[type="radio"] { margin:0; transform:scale(1.1); }
+
+        button {
+            width:100%; margin-top:30px; padding:13px;
+            background: linear-gradient(135deg, #0056b3, #003d82);
+            color:#fff; border:none; border-radius:6px; font-size:17px; font-weight:bold;
+            cursor:pointer; transition: all 0.3s; letter-spacing:0.5px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #004494, #002147);
+            transform: translateY(-2px); box-shadow:0 4px 12px rgba(0,86,179,0.3);
+        }
+
+        .loading, .error-message, .success-message {
+            display: none; text-align:center; padding:12px; border-radius:6px; margin:10px 0;
+        }
+        .loading { background:#e3f2fd; color:#0056b3; font-weight:bold; }
+        .error-message { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+        .success-message { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+
+        @media (max-width: 768px) {
+            body { padding:10px; background-attachment:scroll; }
+            .header { flex-direction:column; padding:15px; min-height:auto; }
+            .logo-container { margin:10px 0; }
+            .header-logo { height:80px; width:80px; }
+            .header-center { padding:0 15px; min-width:auto; }
+            .header-center h1 { font-size:24px; }
+            .header-center .subtitle { font-size:18px; }
+            .container { padding:20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo-container logo-left">
+        <img src="CoDE LOGO PNG.png" alt="CoDE Logo" class="header-logo"
+             onerror="this.src='https://via.placeholder.com/100/002147/FFFFFF?text=CoDE'">
+    </div>
+    <div class="header-center">
+        <h1>UNIVERSITY OF CAPE COAST (UCC)</h1>
+        <div class="subtitle">COLLEGE OF DISTANCE EDUCATION (CoDE)</div>
+    </div>
+    <div class="logo-container logo-right">
+        <img src="UCC LOGO PNG.png" alt="UCC Logo" class="header-logo"
+             onerror="this.src='https://via.placeholder.com/100/0056b3/FFFFFF?text=UCC'">
+    </div>
+</div>
+
+<div class="container">
+    <h2>Monitoring Form</h2>
+
+    <form id="monitoringForm">
+        <div class="field-label">NAME OF LECTURER *</div>
+        <div id="lecturerSearchContainer" class="searchable-select-wrapper">
+            <input type="text" id="lecturerSearchInput" class="searchable-input" 
+                   placeholder="🔍 Type to search lecturer..." autocomplete="off" required>
+            <div id="lecturerDropdown" class="dropdown-options"></div>
+            <input type="hidden" id="lecturer" name="lecturer" required>
+        </div>
+
+        
+        <div class="field-label">COURSE CODE & TITLE *</div>
+        <div id="courseSearchContainer" class="searchable-select-wrapper">
+            <input type="text" id="courseSearchInput" class="searchable-input"
+                   placeholder="🔍 Type to search course..." autocomplete="off" required>
+            <div id="courseDropdown" class="dropdown-options"></div>
+            <input type="hidden" id="course" name="course" required>
+        </div>
+
+        <div class="field-label">PROGRAM *</div>
+        <select id="program" name="program" required>
+            <option value="" disabled selected>Select program</option>
+        </select>
+
+        <div class="field-label">CLASS LEVEL *</div>
+        <div class="radio-container">
+            <label><input type="radio" name="classLevel" value="100" required> Level 100</label><br>
+            <label><input type="radio" name="classLevel" value="200"> Level 200</label><br>
+            <label><input type="radio" name="classLevel" value="300"> Level 300</label><br>
+            <label><input type="radio" name="classLevel" value="400"> Level 400</label><br>
+            <label><input type="radio" name="classLevel" value="400"> Level 500</label><br>
+            <label><input type="radio" name="classLevel" value="400"> Level 800</label>
+        </div>
+
+        <div class="field-label">DATE OF MONITORING *</div>
+        <input type="date" id="monitorDate" name="monitorDate" required>
+
+        <div class="field-label">TIME OF MONITORING *</div>
+        <input type="time" id="monitorTime" name="monitorTime" required>
+
+        <div class="field-label">CLASS START TIME *</div>
+        <input type="time" id="startTime" name="startTime" required>
+
+        <div class="field-label">CLASS END TIME *</div>
+        <input type="time" id="endTime" name="endTime" required>
+
+        <div class="field-label">ATTENDANCE STATUS *</div>
+        <div class="radio-container">
+            <label><input type="radio" name="attendance" value="Present" required> Present</label><br>
+            <label><input type="radio" name="attendance" value="Absent"> Absent</label><br>
+            <label><input type="radio" name="attendance" value="Late"> Late</label>
+        </div>
+
+        <div class="field-label">NAME OF MONITOR</div>
+        <input type="text" id="monitor" name="monitor" placeholder="Enter monitor's full name" required>
+
+        <div class="field-label">MONITORS REMARKS</div>
+        <textarea id="remarks" name="remarks" rows="4" placeholder="Enter any additional remarks or observations..."></textarea>
+
+        <div id="loading" class="loading">⏳ Submitting form... Please wait.</div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <button type="submit" id="submitBtn">Submit Monitoring Form</button>
+    </form>
+</div>
+
+<script>
+// ========== 📋 TUTORS LIST — from tutors_monitoring.xlsx ==========
+const TUTORS_ARRAY = [
+    "Vasty Arthur-Nyarko", "Maxwell Tsibu", "Derrick Amoako", "Maxwell Tsibu", "Wilberforce Obiri",
+    "Lewis Owusu", "Emmanuel Kodom", "Samuel Segbefia", "Peter Tweneboah junior", "Francis Azubire",
+    "Justice Oduro", "Ibrahim Kyeremeh", "Kennedy Owusu", "Felix Awutey", "Kennedy Owusu",
+    "Damian Amewu", "Ransford Addo - asare", "Julius Kpanley", "Paul Coffie", "Bismark Dedzaa",
+    "Bismark Dedzaa", "Joseph Antwi", "Peter Agyemang", "Kofi Kwakye", "Kofi Kwakye",
+    "Prince Kusi", "Robert Quarcoo", "Evans Mensah", "Vivian Kissiwaa", "Isaac Yeboah",
+    "Bright Yeboah", "Emmanuel Oduro-mensah", "Bright Yeboah", "Sampson Effah", "Samuel Ampadu",
+    "Michael Anobi", "Clement Owusu-cole", "Silas Badzi", "Yeboah Obiri", "George Obeng",
+    "Clement Owusu-cole", "Esther Tontoh", "Atta seidu Ishmeal", "Kofi Afriyie", "Solomon Adjei",
+    "Esther Tontoh", "Nathaniel Ahaja", "Felix Vorvor", "Gifty Angmor", "Angela Akowuah",
+    "Juliet Assumeng", "Solomon Adu-gyamfi", "Abdul-latif Alhassan", "Divine Kekesi", "Joseph Akoettey",
+    "Andrews Obeng", "Francis Anyagre", "John York-williams", "Peter Akpalu", "Mercy Degbortse",
+    "Moses Avorkpo", "Calvin Attricki", "Victoria Ansah", "Peter Akpalu", "Comfort Edusei",
+    "Francis Boama", "Gordon Gyeabour", "Ibrahim Tabiri", "Gordon Asante", "Redeemer Korda",
+    "Issifu Musah", "Francesca Anowie", "Felix Amoaning", "Richmond Atiasah", "Desmond Owusu",
+    "Lawrencia Essien", "Charles Tuffour", "Mercy Oware", "Francis Acheampong", "Lydia Amissapo",
+    "Lydia Keteku", "Patrick Larbi", "Bashiru Akubilla", "John Appiah", "James Adeaba",
+    "Ebenezer Kporyi", "Lydia Amissapo", "Isaac Nyarko", "Boniface Aabeyir", "Daniel Ofori",
+    "Philomena Ahey", "Edward Nkrumah", "Eric Andoh", "John Yankey", "Samuel Biney",
+    "Philomena Ahey", "Ernest Asinor", "Naomi Neequaye", "Yahaya Alhaji", "Ambrose Darku",
+    "Samuel Osei", "Derick Antoh", "Daniel Ofori", "Richard Osei ampofo", "Kwabena Kwakye",
+    "Matthew Bediako", "Felix Amuzu", "Selina Peprah", "Stephen Kyeremeh", "Dennis kwabena Frimpong",
+    "Kennedy Darko", "Zakaria Alhassan", "Samuel Opoku", "Charles Osei bonsu", "Selina Peprah",
+    "Eric Damtse", "Lydia Keteku", "David Amoah", "Samuel Aning", "Victor Klevor",
+    "Obed Atta-asamoah", "Stephen Addison", "Haruna Emmanuel", "Samuel Otchere", "Kwashiga Adjorlolo",
+    "Fridaus Dramani", "Adjei Frimpong", "Munkaila Dasumani", "Ekow Arthur-aidoo", "Douglas Manu",
+    "Christopher Gyau", "Amadu Alhassan", "Rita Kwayisi", "Evelyn Benneh", "Bright Addae",
+    "Christian Dadzie-bonney", "Francis Boama", "Joseph Asiedu", "Eric Santos", "Angela Dawutey",
+    "Paul Yankey", "Emmanuel Dorsah", "Francis Yorke", "Abdoul-aziz Bashiru", "Frank Glago",
+    "Thomas Cudjoe", "Jacob Agyemang", "John Kwao", "Tobias Attipoe", "Osei adu Addo",
+    "John Kwao", "Danladi Buukinter", "Christoph Gadese", "Frederick Achaw", "Danladi Buukinter",
+    "Samuel Anim kwarteng", "Abigail Baidoo", "Fortune Atsu", "Fusein Seidu", "Frederick Achaw",
+    "Akofaba Gideon", "Prince Gyasi", "Isaac Boateng", "James courage Awuah", "Fuseini Seidu",
+    "Muftawu Mugsinu", "Denis Asare", "Hakibu sinto Mustapha", "Francis Azubire", "James Awuah",
+    "Samuel Mireku", "Prince Kotoko", "Patrick Koomson", "Emmanuel Atobrah", "Samuel Acheampong",
+    "Sally Adzaku", "Victoria Ansah", "Rashid Giwah", "Matilda Omane -agyekum", "Eric atta Quainoo",
+    "Gordon Kyei", "Ellie Opoku", "Cornelius Afesi", "Enoch Bremang", "Mohammed Issah",
+    "Anna Sakyiwaa", "Samuel Amponsah", "Gariba Iddrisu", "Anthony Sampson", "Edward augustus Mensah",
+    "John-bosco Puotege", "Kwadwo Akowuah", "Susuoroka Gabina", "Lucinda Tokro", "Joseph Wodzebeyew",
+    "Emilyn Ofosu-amaah", "Jafaratu Mahama", "Bright Ayiku", "Annael Abew", "Emmanuel Siaw",
+    "Merchix Nkrumah", "Gloria Dery", "Lawrence Bosiwah", "Agricola N'eebo", "Joe emmanuel Nana otoo",
+    "Afi Nutakor", "Gershon Ladzekpo", "Eric Quansah", "Alhassan Karakara", "Emmanuel Frimpong",
+    "John Kofie", "Nelson Kwashie", "Betty Osei", "Derrick Sackey", "Kudugu Atiah",
+    "Mark Abbey", "Mark Abbey", "Stephen Acquah", "John Boadu", "Wilson Fosuh-mensah",
+    "Leonard Ahialey", "Charles Ameyaw", "Theophilus Asmah", "Obed Bosea", "Eric Deh",
+    "Emmanuel Akrobortu", "Peter Mbawini", "Enoch Appiah", "Ransford Owusu-boakye", "Evelyn Appiah",
+    "Daniel Amoah", "Emmanuel Acquah", "Anku Nutifafa", "Samuel Atobrah", "Issah Mohammed",
+    "Charles Osei bonsu", "Bright Frimpong", "Basil muokuu Muokuu", "Ebenezer Abraham", "Basil Muokuu",
+    "Agyemang Boateng", "Agyemang Boateng", "Sultan Mohammed", "Raynes Ayidan -ansah", "Bright Addae",
+    "Alexis Anzagira", "Andy Addison", "Bight Ayekple", "Edward Agyei", "Doreen Aglebe",
+    "Rose Zamey", "Daniel Botwe", "Afia Osei", "Angelina Ababio", "Justice Djanyikpor",
+    "Michael Sekyere", "Michael Sekyere", "Linda Frimpong", "John Kofie", "Alhassan K-nabia",
+    "Emmanuel Asiedu", "Anomah Emelia", "Kingsley Bekoe", "John Amoateng", "Richard Akutey",
+    "Dennis Okley", "Gabriel Mifetu", "Desmond Gasanga", "Charles Kyereme", "Divine Narh",
+    "Abubakar Adam", "Winifred Opoku", "Braimah Abdulai", "Kwasi Anokye", "Kweku Wilson",
+    "John Amoateng", "Gifty Terkper", "Isaac Tawiah", "Helen Nboyine", "Nagbila Mobire",
+    "Adjei Ernest", "Odonkor Monica", "Bernard Asiedu", "Selina Peprah", "Haruna Nsorwura",
+    "Odonkor Monica", "Sylvia Dery", "Abramani Abudu", "Benedict Quansah", "Patrick Akornortey",
+    "Emmanuel Adjorlolo", "Martin Nyamekye", "Emelia Anomah", "James Awuah", "Bright Ayekple",
+    "James Awuah", "Isaac Sackey", "Enoch Mwini", "Alice Bekure", "Fidelis Kamaayi",
+    "Daniel Amoah", "Hardi Abdul rahaman", "Ebenezer Kwegyah", "Joseph Arthur", "Yeboah Obiri",
+    "Samuel Appiah", "Ernest Damoah-asante", "Ali Mahmud", "Cosmas Nobaboma", "Daniel Tete",
+    "Christine Antwi", "Chelnye Ambrose", "Chelnye Ambrose", "Bashiru Amidu", "Dominic Aboagye",
+    "Gideon Boateng", "Peter Boahen", "Joshua Quayson - monney", "Peter Boahen", "Joshua Quayson - monney",
+    "Dickson Afreh", "Ebenezer Koranteng", "John Attah", "Justice Asante", "Matilda Omane -agyekum",
+    "Matilda Omane-agyekum", "Rolland Fiakofi", "Thomas Obuobi-ayim", "Joshua Quayson - monney", "Evans Sakyi",
+    "Richard Otwey", "Hannah Wiredu", "Hannah Wiredu", "Kwasi Opoku", "Kwasi Bediako",
+    "Evans Sakyi", "Diawuo Amankona", "Benjamin Salakpi", "Festus Nongnenuor", "Isaac Ampem",
+    "Esther Owusu", "Elijah Awuley", "Mohammed Moro", "Isaac Nuopre", "Jerome Obeng",
+    "Nuhu Imoro", "Emmanuel Adjei", "Evelyn Kpogo", "Peter Kwadwo", "Peter Nyarbilla",
+    "William Dautey", "Lawrencia Donkor acheampong", "George Assibi", "Titus Ennin", "Ibrahim Musah",
+    "Bartholomew Dabuo", "Christopher Kutina", "Henry Kuubar", "Stephen Oppong", "Briamah Abdulai",
+    "Peter Dontah", "Elijah Avevor", "Paul Bayiri", "Haruna Mbugri", "Isaac Ennu",
+    "William Aniagyei", "Gabriel Gyasi", "Felix Dongballe", "Hannah Wiredu", "Kwadwo Ahamata",
+    "Solomon Dunyo", "Solomon Dunyo", "James Aboagyejb", "James Aboagyejbo", "Joyce Nyanyovor",
+    "Abudu Korah", "Zakaria Shanunu", "Kingsley Quartey", "Mary Jackson", "Bright Zodanu",
+    "Michael Owusu", "Saviour Kuatudor", "Ebenezer Sarpong", "James Appeaning", "Isaac Boateng",
+    "Emmanuel Eshun", "Victoria Lawson", "Christoph Mortey", "Mawufemor Kpogah", "Bright Acquah",
+    "Bennet Kwakye", "Richard Acquah-goulbourne", "Akwasi Afrane", "Joshua Wilson", "Hakeem Musah",
+    "Alex Adobaw-bansah", "Patrick Adem", "Charles l Ameyaw", "Bartholomew Mosonsieyiri", "Eric Darko",
+    "Alfred Dorgbetor", "Peter Dontah", "Isaac Nyarko", "Isaac Nyarko", "George Nyaku",
+    "Nathaniel Quansah", "Benjamin Boye", "Benjamin Boye", "Benedicta Titriku", "Joseph donkor Mensah",
+    "Jonas Adu", "Gideon Agbanyo", "Kwadwo Essel", "Peter Atubigah", "George Cobbold",
+    "Kwadwo Owusu", "Abraham Avorgbedor", "Kwadwo Owusu", "Anthony Gyabeng", "Mark Dadzie",
+    "Samuel Darkwah", "Heron Kudoto", "James Nyarko", "Comfort Bonsu", "Millicent Asempapa",
+    "Gladys Seho-ahiable", "Iddrisu Issaka", "Rev samuel Takyi", "Joana Bortey", "Mohamed Askia",
+    "Benedict Ayaaba", "Kwaku Koranteng", "Koame Mieza", "Joshua Adadey", "Roland Takyi",
+    "Margaret Bassah", "Joseph Blankson", "Ebenezer Kpelly", "John Avoka", "Wisdom Torkor",
+    "Daniel Agyei-kyeremeh", "Raynes Ayidan -ansah", "Gyakari Akobo", "Doris Amankona", "Patricia Klutse",
+    "Vera Obeng", "Alex Paintsil", "Dorcas Slippe", "Dorothy Oppong-agyare", "Mary Ahenful"
+];
+const UNIQUE_TUTORS = [...new Set(TUTORS_ARRAY)];
+
+// ========== 📚 COURSES LIST (hardcoded, 150+ courses) ==========
+const ALL_COURSES = [
+    "EMA309D - ASSESSMENT IN MATHEMATICS EDUCATION", "EIT201D - LEARNING THEORIES FOR TEACHING WITH COMPUTER",
+    "ECD101D - DRAWING AND RENDERING 1", "INF109D - MATHEMATICS FOR COMPUTING 1",
+    "EIT101D - FUNDAMENTALS OF OFFICE SUIT IN EDUCATION", "PHY103D - GENERAL PHYSICS 1 (PRACTICAL)",
+    "CHE109D - GENERAL CHEMISTRY (PRACTICAL)", "EIT404D - MULTIMEDIA IN EDUCATION",
+    "INF413D - INFORMATION SYSTEM SECURITY AND MANAGEMENT", "INF411D - PROFESSIONAL COMPUTING",
+    "INF405D - E-COMMERCE 1", "INF403D - MOBILE AND DISTRIBUTED COMPUTING",
+    "INF401D - INTRODUCTING TO MULTIMEDIA COMPUTING", "INF313D - WEB TECHNOLOGY II",
+    "EIT303D - ASSESSMENT IN INFORMATION TECHNOLOGY EDUCATION", "INF315D - DISCRETE MATHEMATICS",
+    "BIO201AD - BASIC SOIL SCIENCE", "ECO103D - PRINCIPLES OF MICROECONOMICS",
+    "CMS107D - COMMUNICATION SKILLS 1", "EDF102D - SOCIAL AND PHILOSOPHICAL FOUNDATIONS OF EDUCATION",
+    "ILT101D - INFORMATION LITERACY", "ASP101D - AFRICAN STUDIES",
+    "ECD105D - LETTERING AND TYPOGRAPHY", "EGA103D - BASIC DESIGN AND COLOUR PSYCHOLOGY",
+    "INF107D - SOFTWARE SUITE", "INF101D - INTRODUCTION TO COMPUTING",
+    "ECO101D - PRINCIPLES OF MICROECONOMICS", "INF105D - INTRODUCTION TO MANAGEMENT",
+    "MAT101D - ALGEBRA AND TRIGONOMETRY", "BIO101D - DIVERSITY OF LIVING ORGANISMS",
+    "PHY101D - GENERAL PHYSICS 1 (THEORY)", "SBU103D - FOUNDATIONS OF ACCOUNTING I",
+    "CHE107D - GENERAL CHEMISTRY (BASIC GENERAL CHEMISTRY)", "EMA212D - PCK IN MATHEMATHEMATICS",
+    "EIT203D - MODALITIES OF TECHNOLOGY FOR TEACHING AND TRAINING", "INF209D - STATISTICAL MODELING",
+    "ECD207D - INDUSTRIAL PRINTING TECHNOLOGY I", "INF219D - OPERATING SYSTEMS",
+    "EIT211D - METHODS OF TEACHING IT", "INF215D - DATABASE MANAGEMENT I",
+    "INF211D - COMPUTER ARCHITECTURE", "ECD201D - INDUSTRIAL PRINTING TECHNOLOGY I",
+    "EIT201D - LEARNING THEORIES FOR TEACHING WITH COMPUTER", "INF217D - PROGRAMING AND PROBLEM ANALYSIS",
+    "EMA208D - METHODS OF TEACHING SHS MATHS", "ECO201D - ELEMENTS OF MICRO ECONOMICS",
+    "EMA202D - ADVANCE ALGEBRA AND CALCULUS", "MAT203D - FURTHER CALCULUS",
+    "EMA201D - NATURE OF MATHEMATICS", "EMA209D - INTRODUCTORY STATICS I",
+    "PHY205D - NEWTONIAN MECHANICS (PRACTICAL)", "BIO204D - MORPHOLOGY AND ANATOMY OF HIGHER PLANTS",
+    "ESC220D - METHODS OF TEACHING PHYSICS", "PHY207D - METHODS OF TEACHING PHYSICS",
+    "PHY203D - INTRODUCTORY ATOMIC PHYSICS, HEAT AND OPTICS", "PHY201D - NEWTONIAN MECHANICS",
+    "EPS212D - SPECIAL EDUCATION", "PHL205D - CRITICAL THINKING AND LOGICAL REASONING",
+    "ESC208D - METHODS OF TEACHING BIOLOGY", "ESC209D - METHODS OF TEACHING CHEMISTRY",
+    "ESC201D - NATURE OF SCIENCE", "CHE207D - PRACTICAL PHYSICAL CHEMISTRY I",
+    "BIO202D - CELL AND TISSUE ORGANIZATION", "CHE203D - PHYSICAL CHEMISTRY I",
+    "CHE201D - MAIN GROUP CHEMISTRY", "EIT304D - INTERNET AND WEB PEDAGOGIES",
+    "INF304D - WEB TECHNOLOGY II", "INF213D - WEB TECHNOLOGY",
+    "PHY303D - THERMAL PHYSICS", "ESC306D - SCIENCE TECHNOLOGY AND SOCIETY",
+    "ESC327D - PCK IN PHYSICS", "ESC312D - PCK IN CHEMISTRY",
+    "ESC316D - PCK IN BIOLOGY", "MBB309D - INTRODUCTION TO MOLECULAR GENETICS",
+    "CHE325D - STEREOCHEMISTRY", "ESC335D - DEVELOPMENT OF SCIENCE TEACHING MATERIALS",
+    "BIO201D - BASIC SOIL SCIENCE", "CHE301D - ANALYTICAL CHEMISTRY",
+    "PHY309D - ATOMIC AND MODERN PHYSICS", "EMA399D - RESEARCH METHODS IN MATH",
+    "EMA335D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS IN MATHS", "STA303D - STATISTICAL METHODS I",
+    "MAT301D - ADVANCED CALCULUS I", "INF305D - NETWORK COMPUTING",
+    "ECD305D - IDENTITY DESIGN AND BRANDING", "INF307D - SOFTWARE ENGINEERING",
+    "EIT302D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS WITH COMPUTERS", "ECO301SD - INTERMEDIATE MICROECONOMICS",
+    "ECD309D - PACKAGING AND ENVIRONMENTAL GRAPHICS", "INF309D - INFORMATION SYSTEMS MANAGEMENT",
+    "ESC311D - ASSESSMENT IN SCIENCE EDUCATION", "ESC309D - ASSESSMENT IN MATHEMATICS",
+    "SOC101D - INTRODUCTION TO SOCIOLOGY I", "SBU101D - FUNDAMENTALS OF BUSINESS I",
+    "RLH101D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
+    "EBS179D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
+    "HIS110D - WORLD CIVILIZATIONS UP TO 5TH CENTURY BC", "GHL107TD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (TWI)",
+    "GHL107GAD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (GA)", "GHL107FD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (MFANTSE)",
+    "GHL107ED - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (EWE)", "GEO103BD - THEMATIC GEOGRAPHY OF GHANA",
+    "GEO101D - ELEMENTS OF PHYSICAL GEOGRAPHY", "EBS161D - SOCIOLOGY OF THE FAMILY",
+    "EBS157D - HUMAN-LAND ISSUES IN SOCIAL STUDIES", "EBS145D - ELEMENTARY GEOMETRY",
+    "EBS133D - THE USE OF ENGLISH", "ENG101D - THE USE OF ENGLISH",
+    "EBS126D - INTRODUCTION TO SOCIAL STUDIES", "EBS125D - PRINCIPLES AND PRACTICE OF EDUCATION",
+    "EBS123D - PHILOSOPHICAL AND PSYCHOLOGICAL FOUNDATIONS OF RME", "EBS121D - STUDIES IN AFRICAN POETRY",
+    "EBS120TD - LINGUISTICS OF THE GHANAIAN LANGUAGE (TWI)", "EBS120GAD - LINGUISTICS OF THE GHANAIAN LANGUAGE (GA)",
+    "EBS120FD - LINGUISTICS OF THE GHANAIAN LANGUAGE (MFANTSE)", "EBS120ED - LINGUISTICS OF THE GHANAIAN LANGUAGE (EWE)",
+    "EBS116TD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (TWI)", "EBS116GAD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (GA)",
+    "EBS116FD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (MFANTSE)", "EBS116ED - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (EWE)",
+    "EBS114D - GENERAL BIOLOGY THEORY I", "EBS112D - FUNDAMENTALS IN HOME ECONOMICS",
+    "EBS109D - FUNDAMENTALS OF IT EDUCATION", "EBS108D - LANGUAGE AND LINGUISTICS",
+    "EBS106D - CHILD DEVELOPMENT AND LEARNING", "EBS105D - CHILD AND ADOLESCENT DEVELOPMENT AND LEARNING",
+    "EBS103D - GENERAL BIOLOGY", "EBS102D - COLLEGE ALGEBRA",
+    "EBS101D - ELEMENTARY ALGEBRA", "EAS106D - THE CORE OF HISTORICAL KNOWLEDGE",
+    "EAS103D - INTRODUCTION TO SECOND LANGUAGE LEARNING & TEACHING", "EAS102D - MORALITY AND SOCIAL VALUES",
+    "BPS121D - BASIC STATISTICS", "BPS113D - PSYCHOLOGY OF HUMAN GROWTH AND DEVELOPMENT",
+    "BPS111D - INTRODUCTION TO GENERAL PSYCHOLOGY", "APS101D - AFRICAN STUDIES"
+];
+const UNIQUE_COURSES = [...new Set(ALL_COURSES)]; 
+
+// ========== B.Ed PROGRAMS ==========
+const BED_PROGRAMS = [
+    "B.Ed Early Childhood", "B.Ed Primary Education", "B.Ed JHS Education",
+    "B.Ed Arts", "B.Ed Maths", "B.Ed Science", "B.Ed IT",
+    "B.Ed Social Studies", "B.Ed Accounting and Management"
+];
+
+// ========== SEARCHABLE DROPDOWN FACTORY ==========
+function createSearchableDropdown(config) {
+    const { inputId, dropdownId, hiddenId, dataArray, placeholder } = config;
+
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    const hidden = document.getElementById(hiddenId);
+
+    function render(filter = '') {
+        const lowerFilter = filter.toLowerCase().trim();
+        let matched = dataArray.filter(item => item.toLowerCase().includes(lowerFilter));
+        matched.sort((a,b) => a.localeCompare(b));
+
+        dropdown.innerHTML = '';
+
+        if (!filter) {
+            // preview first 30
+            const preview = dataArray.slice(0, 30);
+            preview.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.textContent = item;
+                div.onclick = () => selectItem(item);
+                dropdown.appendChild(div);
+            });
+            if (dataArray.length > 30) {
+                const more = document.createElement('div');
+                more.className = 'no-result';
+                more.textContent = `... and ${dataArray.length - 30} more. Type to narrow.`;
+                dropdown.appendChild(more);
+            }
+            return;
+        }
+
+        if (matched.length === 0) {
+            dropdown.innerHTML = '<div class="no-result">No matching items</div>';
+            return;
+        }
+
+        matched.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'option-item';
+            div.textContent = item;
+            div.onclick = () => selectItem(item);
+            dropdown.appendChild(div);
+        });
+    }
+
+    function selectItem(value) {
+        input.value = value;
+        hidden.value = value;
+        dropdown.classList.remove('show');
+        input.setCustomValidity('');
+    }
+
+    // --- attach events ---
+    input.addEventListener('focus', () => {
+        render(input.value);
+        dropdown.classList.add('show');
+    });
+
+    input.addEventListener('input', function() {
+        render(this.value);
+        dropdown.classList.add('show');
+        hidden.value = '';   // force selection from list
+    });
+
+    // hide when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('show');
+            if (!hidden.value && input.value.trim() !== '') {
+                input.setCustomValidity('Please select a valid item from the list');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+    });
+
+    input.addEventListener('blur', function() {
+        if (!hidden.value && this.value.trim() !== '') {
+            this.setCustomValidity('Please select a valid item from the list');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    hidden.required = true;
+    input.placeholder = placeholder || '🔍 Type to search...';
+}
+
+// ========== INITIALISE ALL DROPDOWNS ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // Lecturer search
+    createSearchableDropdown({
+        inputId: 'lecturerSearchInput',
+        dropdownId: 'lecturerDropdown',
+        hiddenId: 'lecturer',
+        dataArray: UNIQUE_TUTORS,
+        placeholder: '🔍 Type to search lecturer...'
+    });
+
+    // Course search
+    createSearchableDropdown({
+        inputId: 'courseSearchInput',
+        dropdownId: 'courseDropdown',
+        hiddenId: 'course',
+        dataArray: UNIQUE_COURSES,
+        placeholder: '🔍 Type to search course...'
+    });
+
+    // other initialisations
+    populateProgramDropdown();
+    setDefaultDate();
+    setupFormSubmission(document.getElementById('monitoringForm'));
+});
+
+// ========== POPULATE PROGRAM DROPDOWN ==========
+function populateProgramDropdown() {
+    const prog = document.getElementById('program');
+    if (!prog) return;
+    prog.innerHTML = '<option value="" disabled selected>Select program</option>';
+    BED_PROGRAMS.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p; opt.textContent = p; prog.appendChild(opt);
+    });
+}
+
+function setDefaultDate() {
+    const d = document.getElementById('monitorDate');
+    if (d) d.value = new Date().toISOString().split('T')[0];
+}
+
+// ========== FORM SUBMISSION & VALIDATION ==========
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0BoHL31ggZaa5slbO4jZKRgvRn1TENb4kbcKvtHg8muRhUmqLg-h1uFMJSoS_mMb4/exec';
+
+function setupFormSubmission(form) {
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // ensure hidden fields have values (lecturer, course)
+        const lecturerHidden = document.getElementById('lecturer');
+        const courseHidden = document.getElementById('course');
+        if (!lecturerHidden.value) {
+            alert('Please select a valid lecturer from the dropdown.');
+            return;
+        }
+        if (!courseHidden.value) {
+            alert('Please select a valid course from the dropdown.');
+            return;
+        }
+
+        if (!validateForm()) return;
+
+        const data = prepareFormData();
+        await submitFormData(data);
+    });
+}
+
+function validateForm() {
+    let ok = true;
+    document.querySelectorAll('[required]').forEach(f => f.style.borderColor = '');
+    document.querySelectorAll('[required]').forEach(f => {
+        if (!f.value.trim()) {
+            f.style.borderColor = 'red'; ok = false;
+        }
+    });
+    if (!document.querySelector('input[name="classLevel"]:checked')) { alert('Select class level'); ok = false; }
+    if (!document.querySelector('input[name="attendance"]:checked')) { alert('Select attendance'); ok = false; }
+    return ok;
+}
+
+function prepareFormData() {
+    const data = {};
+    new FormData(document.getElementById('monitoringForm')).forEach((v,k) => data[k]=v);
+    data.formType = 'Undergraduate';
+    const cl = document.querySelector('input[name="classLevel"]:checked');
+    if (cl) data.classLevel = cl.value;
+    const att = document.querySelector('input[name="attendance"]:checked');
+    if (att) data.attendance = att.value;
+    return data;
+}
+
+async function submitFormData(data) {
+    const btn = document.getElementById('submitBtn');
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '⏳ Sending...';
+    document.getElementById('loading').style.display = 'block';
+    hideMessages();
+
+    try {
+        const body = new URLSearchParams(data);
+        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body.toString() });
+        showSuccessMessage();
+        setTimeout(() => resetForm(), 2000);
+    } catch (e) {
+        showErrorMessage(e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = orig;
+        document.getElementById('loading').style.display = 'none';
+    }
+}
+
+function hideMessages() {
+    ['errorMessage','successMessage'].forEach(id => document.getElementById(id).style.display = 'none');
+}
+function showSuccessMessage() {
+    const msg = document.getElementById('successMessage');
+    msg.innerHTML = '✅ <strong>Success!</strong> Form submitted.'; msg.style.display = 'block';
+}
+function showErrorMessage(m) {
+    const msg = document.getElementById('errorMessage');
+    msg.innerHTML = `❌ <strong>Error:</strong> ${m}`; msg.style.display = 'block';
+}
+
+function resetForm() {
+    document.getElementById('monitoringForm').reset();
+    setDefaultDate();
+    populateProgramDropdown();
+
+    // Clear search inputs and hidden fields
+    document.getElementById('lecturerSearchInput').value = '';
+    document.getElementById('lecturer').value = '';
+    document.getElementById('courseSearchInput').value = '';
+    document.getElementById('course').value = '';
+
+    hideMessages();
+}
+
+</script>
+
+</body>
+</html>

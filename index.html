@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor's Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: #333;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .logo {
+            flex-shrink: 0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            text-align: center;
+            padding: 8px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            text-align: center;
+            padding: 8px;
+            background-color: #d4edda;
+            border-radius: 4px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="header">
+        <img src="CoDE LOGO PNG.png" height="80" width="80" class="logo">
+        <h2>Monitors Login</h2>
+        <img src="UCC LOGO PNG.png" height="80" width="80" class="logo">
+    </div>
+
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="staffId">Staff ID</label>
+            <input type="text" id="staffId" name="staffId" placeholder="Enter Staff ID" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Digits only"
+                   pattern="[0-9]+"
+                   title="Password must contain digits only"
+                   required>
+            <div class="hint">Password must be a unique string of digits.</div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message">Login successful! Redirecting...</div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <span style="margin-left: 8px;">Verifying...</span>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">Login</button>
+       
+    </form>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from submitting normally
+        
+        // Get input values
+        const staffId = document.getElementById('staffId').value.trim();
+        const password = document.getElementById('password').value;
+        
+        // Get message elements
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        // Hide any previous messages
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+        
+        // Show loading spinner
+        loading.style.display = 'block';
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+        
+        // Simulate network delay (remove this in production)
+        setTimeout(function() {
+            // Validate credentials
+            if (staffId === 'NSC25/100' && password === '1234567890') {
+                // Show success message
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Redirect to another page after 1.5 seconds
+                setTimeout(function() {
+                    // Change this URL to your actual destination page
+                    window.location.href = 'undergrad.html'; // or 'welcome.html', 'home.html', etc.
+                }, 1500);
+            } else {
+                // Show error message
+                errorMessage.textContent = 'Invalid Staff ID or Password. Please try again.';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                
+                // Reset form
+                document.getElementById('password').value = '';
+                
+                // Enable button again
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+            
+            // Hide loading spinner
+            loading.style.display = 'none';
+        }, 1000); // 1 second delay to simulate processing
+    });
+
+    // Clear error message when user starts typing
+    document.getElementById('staffId').addEventListener('input', function() {
+        document.getElementById('errorMessage').style.display = 'none';
+    });
+    
+    document.getElementById('password').addEventListener('input', function() {
+        document.getElementById('errorMessage').style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

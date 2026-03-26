@@ -1,0 +1,33 @@
+// programs.js
+const PROGRAMS_LIST = {
+    "Switch": [
+        "BSc. Information Technology",
+        "BSc. Business Administration", 
+        "BSc. Education",
+        "BSc. Nursing",
+        "BA. Arts",
+        "Diploma in IT",
+        "Diploma in Management"
+    ],
+    
+    "Undergraduate": [
+        "BSc. Information Technology",
+        "BSc. Business Administration", 
+        "BSc. Education",
+        "BSc. Nursing",
+        "BA. Arts",
+        "BSc. Economics",
+        "BSc. Mathematics",
+        "BSc. Psychology"
+        
+    ],
+    
+    "Postgraduate": [
+        "MSc. Information Technology",
+        "MBA (Master of Business Administration)",
+        "MEd. (Master of Education)",
+        "MA. Arts",
+        "PhD. Information Technology",
+        "PhD. Business Administration"
+    ]
+};

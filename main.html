@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Switch Monitoring Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            padding: 20px;
+            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+            background-color: rgba(255, 255, 255, 0.9);
+            min-height: 100vh;
+        }
+
+        /* Semi-transparent overlay for better readability */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: -1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #002147, #0056b3);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-height: 140px;
+        }
+
+        .logo-container {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-left {
+            margin-right: auto;
+        }
+
+        .logo-right {
+            margin-left: auto;
+        }
+
+        .header-logo {
+            height: 100px;
+            width: 100px;
+            object-fit: contain;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+   
+        .header-logo::before {
+            content: "LOGO";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .header-center {
+            flex: 1;
+            text-align: center;
+            padding: 0 30px;
+            min-width: 300px;
+        }
+
+        .header-center h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .header-center .subtitle {
+            margin: 8px 0 0 0;
+            font-size: 20px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            border: 1px solid rgba(0, 123, 255, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #002147;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+
+        .field-label {
+            font-weight: bold;
+            margin-top: 18px;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .radio-container {
+            margin-top: 8px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .radio-container label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .radio-container label:hover {
+            background: #e9ecef;
+        }
+
+        .radio-container input[type="radio"] {
+            margin: 0;
+            transform: scale(1.1);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 13px;
+            background: linear-gradient(135deg, #0056b3, #003d82);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #004494, #002147);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+       
+        .debug-border {
+            border: 1px dashed red;
+        }
+
+      
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                background-attachment: scroll;
+            }
+            
+            .header {
+                flex-direction: column;
+                padding: 15px;
+                text-align: center;
+                min-height: auto;
+            }
+            
+            .logo-container {
+                margin: 10px 0;
+            }
+            
+            .header-logo {
+                height: 80px;
+                width: 80px;
+            }
+            
+            .header-center {
+                padding: 0 15px;
+                min-width: auto;
+            }
+            
+            .header-center h1 {
+                font-size: 24px;
+            }
+            
+            .header-center .subtitle {
+                font-size: 18px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px;
+            }
+            
+            .header-logo {
+                height: 70px;
+                width: 70px;
+            }
+            
+            .header-center h1 {
+                font-size: 20px;
+            }
+            
+            .header-center .subtitle {
+                font-size: 16px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <!-- Left Logo -->
+    <div class="logo-container logo-left">
+        <img src="UCC LOGO PNG.png" 
+             alt="CoDE Logo" 
+             class="header-logo"
+             onerror="this.src='https://via.placeholder.com/100/002147/FFFFFF?text=CoDE'">
+    </div>
+    
+    <!-- Center Text -->
+    <div class="header-center">
+        <h1>COLLEGE OF DISTANCE EDUCATION (CoDE)</h1>
+        <div class="subtitle">UNIVERSITY OF CAPE COAST (UCC)</div>
+    </div>
+    
+    <!-- Right Logo -->
+    <div class="logo-container logo-right">
+        <img src="CoDE LOGO PNG.png" 
+             alt="UCC Logo" 
+             class="header-logo"
+             onerror="this.src='https://via.placeholder.com/100/0056b3/FFFFFF?text=UCC'">
+    </div>
+</div>
+
+<div class="container">
+    <h2>Switch Monitoring Form</h2>
+
+    <form action="#" method="POST">
+
+        <div class="field-label">NAME OF LECTURER *</div>
+        <input type="text" name="lecturer" required placeholder="Enter lecturer's full name">
+
+        <div class="field-label">COURSE CODE & TITLE *</div>
+        <input type="text" name="course" required placeholder="Enter course title">
+
+        <div class="field-label">PROGRAM *</div>
+        <select name="program" id="programSelect" required>
+        </select>
+
+        <div class="field-label">CLASS LEVEL *</div>
+        <div class="radio-container">
+            <label>
+                <input type="radio" name="classLevel" value="100" required>
+                Level 100
+            </label><br>
+
+            <label>
+                <input type="radio" name="classLevel" value="200">
+                Level 200
+            </label><br>
+
+            <label>
+                <input type="radio" name="classLevel" value="300">
+                Level 300
+            </label><br>
+
+            <label>
+                <input type="radio" name="classLevel" value="400">
+                Level 400
+            </label>
+        </div>
+
+        <div class="field-label">DATE OF MONITORING *</div>
+        <input type="date" name="monitorDate" required>
+
+        <div class="field-label">TIME OF MONITORING *</div>
+        <input type="time" name="monitorTime" required>
+
+        <div class="field-label">CLASS START TIME *</div>
+        <input type="time" name="startTime" required>
+
+        <div class="field-label">CLASS END TIME *</div>
+        <input type="time" name="endTime" required>
+
+        <div class="field-label">ATTENDANCE STATUS *</div>
+        <div class="radio-container">
+            <label>
+                <input type="radio" name="attendance" value="Present" required>
+                Present
+            </label><br>
+
+            <label>
+                <input type="radio" name="attendance" value="Absent">
+                Absent
+            </label><br>
+
+            <label>
+                <input type="radio" name="attendance" value="Late">
+                Late
+            </label>
+        </div>
+
+        <div class="field-label">NAME OF MONITOR</div>
+        <input type="text" name="monitor" required placeholder="Enter monitor's full name">
+
+        <div class="field-label">MONITORS REMARKS</div>
+        <textarea name="remarks" rows="4" placeholder="Enter any additional remarks or observations..."></textarea>
+
+        <button type="submit">Submit Monitoring Form</button>
+        <script>
+document.querySelector('form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const form = e.target;
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  
+  // Add form type for identification
+  data.formType = 'Switch'; // Change to 'Undergraduate' for undergrad.html
+  
+  try {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    
+    // Your Google Apps Script URL
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx0BoHL31ggZaa5slbO4jZKRgvRn1TENb4kbcKvtHg8muRhUmqLg-h1uFMJSoS_mMb4/exec';
+    
+    const response = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    
+    if (result.result === 'success') {
+      alert('Form submitted successfully!');
+      form.reset();
+    } else {
+      alert('Error submitting form. Please try again.');
+    }
+    
+  } 
+});
+</script>
+    </form>
+</div>
+<script>
+// ========== CONFIGURATION ==========
+// REPLACE THIS WITH YOUR ACTUAL DEPLOYED URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0BoHL31ggZaa5slbO4jZKRgvRn1TENb4kbcKvtHg8muRhUmqLg-h1uFMJSoS_mMb4/exec'; // Your URL here
+
+// ========== FORM SUBMISSION ==========
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('form');
+  
+  if (!form) {
+    console.error('Form not found');
+    return;
+  }
+  
+  console.log('Form loaded, script URL:', SCRIPT_URL);
+  
+  // Test connection on load
+  testConnection();
+  
+  // Handle form submission
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    console.log('Form submission started...');
+    
+    // Collect form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Add form type
+    data.formType = 'Switch';
+    
+    console.log('Data to submit:', data);
+    
+    // Get submit button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Sending...';
+    
+    try {
+      // ========== METHOD 1: Direct fetch with no-cors ==========
+      console.log('Trying Method 1...');
+      
+      // Convert to URL-encoded form data (works better with Google Apps Script)
+      const formBody = new URLSearchParams();
+      for (const key in data) {
+        formBody.append(key, data[key]);
+      }
+      
+      // Use no-cors mode (avoids CORS issues)
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // IMPORTANT: no-cors mode
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formBody.toString()
+      });
+      
+      // With no-cors, we can't read the response, but request was sent
+      console.log('✅ Request sent (no-cors mode)');
+      
+      // Show success message (we assume it worked since no error)
+      showMessage('✅ Form submitted successfully!', 'success');
+      
+      // Reset form after delay
+      setTimeout(() => {
+        form.reset();
+        showMessage('', 'clear'); // Clear message
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Method 1 failed:', error);
+      
+      // ========== METHOD 2: JSONP alternative ==========
+      try {
+        console.log('Trying Method 2 (JSONP)...');
+        await submitViaJSONP(data);
+        showMessage('✅ Form submitted via alternative method!', 'success');
+      } catch (jsonpError) {
+        console.error('Method 2 also failed:', jsonpError);
+        
+        // ========== METHOD 3: Google Forms workaround ==========
+        showMessage('⚠️ Using backup submission method...', 'warning');
+        await submitViaGoogleForms(data);
+        
+      }
+    } finally {
+      // Re-enable button
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+});
+
+// ========== HELPER FUNCTIONS ==========
+
+// Test connection to Google Apps Script
+async function testConnection() {
+  console.log('Testing connection to:', SCRIPT_URL);
+  
+  try {
+    // Try to access the script (GET request)
+    const testUrl = SCRIPT_URL + '?test=' + Date.now();
+    const response = await fetch(testUrl, { mode: 'no-cors' });
+    console.log('✅ Connection test completed (no-cors mode)');
+    
+    // Alternative: Try with a script tag (JSONP)
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = SCRIPT_URL + '?callback=testCallback&test=' + Date.now();
+      window.testCallback = function(data) {
+        console.log('✅ Script is accessible:', data);
+        resolve(true);
+      };
+      document.body.appendChild(script);
+      setTimeout(() => {
+        document.body.removeChild(script);
+        resolve(false);
+      }, 5000);
+    });
+    
+  } catch (error) {
+    console.warn('⚠️ Connection test failed:', error);
+    return false;
+  }
+}
+
+// JSONP submission method
+function submitViaJSONP(data) {
+  return new Promise((resolve, reject) => {
+    // Add callback function
+    const callbackName = 'jsonpCallback_' + Date.now();
+    data.callback = callbackName;
+    
+    // Create script tag
+    const script = document.createElement('script');
+    const params = new URLSearchParams();
+    
+    for (const key in data) {
+      params.append(key, data[key]);
+    }
+    
+    script.src = SCRIPT_URL + '?' + params.toString();
+    
+    // Define callback
+    window[callbackName] = function(response) {
+      console.log('JSONP response:', response);
+      delete window[callbackName];
+      document.body.removeChild(script);
+      
+      if (response && response.success) {
+        resolve(response);
+      } else {
+        reject(new Error('JSONP submission failed'));
+      }
+    };
+    
+    // Set timeout
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        reject(new Error('JSONP timeout'));
+      }
+    }, 10000);
+    
+    // Add to page
+    document.body.appendChild(script);
+  });
+}
+
+// Google Forms backup method (if Apps Script still fails)
+function submitViaGoogleForms(data) {
+  // This is a backup - creates a form submission
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/formResponse';
+  form.target = '_blank';
+  form.style.display = 'none';
+  
+  // Map your data to Google Forms fields
+  // You'll need to create a Google Form and get field IDs
+  const fieldMap = {
+    'lecturer': 'entry.1234567890',
+    'course': 'entry.2345678901',
+    // Add all your fields here
+  };
+  
+  for (const key in data) {
+    if (fieldMap[key]) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = fieldMap[key];
+      input.value = data[key];
+      form.appendChild(input);
+    }
+  }
+  
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(() => document.body.removeChild(form), 1000);
+  
+  return Promise.resolve();
+}
+
+// Show message to user
+function showMessage(text, type) {
+  // Remove existing messages
+  const existing = document.querySelectorAll('.form-message');
+  existing.forEach(msg => msg.remove());
+  
+  if (!text) return;
+  
+  const message = document.createElement('div');
+  message.className = 'form-message';
+  message.textContent = text;
+  
+  // Style based on type
+  const styles = {
+    success: 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;',
+    error: 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;',
+    warning: 'background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;'
+  };
+  
+  message.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    ${styles[type] || styles.success}
+    border-radius: 5px;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+    max-width: 400px;
+  `;
+  
+  document.body.appendChild(message);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (message.parentNode) {
+      message.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => message.remove(), 300);
+    }
+  }, 5000);
+}
+
+// Add CSS animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+<script>
+// Programs data - you can edit this list easily
+const PROGRAM_LISTS = {
+    SWITCH: [
+        "BSc. Information Technology",
+        "BSc. Business Administration",
+        "BSc. Education",
+        "BSc. Nursing", 
+        "BA. Arts",
+        "Diploma in IT",
+        "Diploma in Management",
+        "Certificate in IT",
+        "Other"
+    ],
+    
+    UNDERGRADUATE: [
+        "BSc. Information Technology",
+        "BSc. Business Administration",
+        "BSc. Education",
+        "BSc. Nursing",
+        "BA. Arts", 
+        "BSc. Economics",
+        "BSc. Mathematics",
+        "BSc. Psychology",
+        "BSc. Sociology",
+        "BSc. Political Science",
+        "BSc. Environmental Science",
+        "Other"
+    ]
+};
+
+// Function to populate programs dropdown
+function populatePrograms(formType) {
+    const programSelect = document.getElementById(formType === 'switch' ? 'programSelect' : 'program');
+    
+    if (!programSelect) {
+        console.error('Program select element not found');
+        return;
+    }
+    
+    // Clear existing options
+    programSelect.innerHTML = '<option value="" disabled selected>Select program</option>';
+    
+    // Get the right program list
+    const programs = formType === 'switch' ? PROGRAM_LISTS.SWITCH : PROGRAM_LISTS.UNDERGRADUATE;
+    
+    // Add options
+    programs.forEach(program => {
+        const option = document.createElement('option');
+        option.value = program;
+        option.textContent = program;
+        programSelect.appendChild(option);
+    });
+}
+
+// Initialize based on page
+document.addEventListener('DOMContentLoaded', function() {
+    // Check which page we're on and populate accordingly
+    if (document.getElementById('programSelect')) {
+        // Switch form
+        populatePrograms('switch');
+    } else if (document.getElementById('program')) {
+        // Undergraduate form
+        populatePrograms('undergraduate');
+    }
+});
+</script>
+</body>
+</html>
