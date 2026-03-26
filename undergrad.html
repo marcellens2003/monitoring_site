@@ -593,7 +593,7 @@ function validateForm() {
 function prepareFormData() {
     const data = {};
     new FormData(document.getElementById('monitoringForm')).forEach((v,k) => data[k]=v);
-    data.formType = 'Undergraduate';
+    data.formType = 'Postgraduate';
     const cl = document.querySelector('input[name="classLevel"]:checked');
     if (cl) data.classLevel = cl.value;
     const att = document.querySelector('input[name="attendance"]:checked');
