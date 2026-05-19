@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Monitoring</title>
+    <title>Postgraduate Monitoring</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -125,6 +125,63 @@
         .radio-container label:hover { background:#e9ecef; }
         .radio-container input[type="radio"] { margin:0; transform:scale(1.1); }
 
+        /* Duration display */
+        .duration-display {
+            margin-top: 6px;
+            padding: 11px 16px;
+            background: #f0f7ff;
+            border: 1px solid #b8d4f5;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #0056b3;
+            letter-spacing: 0.3px;
+        }
+        .duration-display.invalid {
+            background: #fff5f5;
+            border-color: #f5c6cb;
+            color: #dc3545;
+        }
+        .mode-delivery-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .mode-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .mode-option:hover {
+            border-color: #0056b3;
+            background: #e8f0fe;
+        }
+        .mode-option input[type="radio"] {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            flex-shrink: 0;
+            accent-color: #0056b3;
+        }
+        .mode-option:has(input[type="radio"]:checked) {
+            border-color: #0056b3;
+            background: #e8f0fe;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        }
+        .mode-option:has(input[type="radio"]:checked) .mode-text {
+            color: #0056b3;
+            font-weight: 600;
+        }
+        .mode-text { font-size: 15px; color: #444; }
+
         button {
             width:100%; margin-top:30px; padding:13px;
             background: linear-gradient(135deg, #0056b3, #003d82);
@@ -173,9 +230,17 @@
 </div>
 
 <div class="container">
-    <h2>Monitoring Form</h2>
+    <h2> Monitoring Form</h2>
 
     <form id="monitoringForm">
+        <div class="field-label">STAFF ID *</div>
+        <div id="staffIdSearchContainer" class="searchable-select-wrapper">
+            <input type="text" id="staffIdSearchInput" class="searchable-input"
+                   placeholder="🔍 Type Staff ID to auto-fill lecturer name..." autocomplete="off">
+            <div id="staffIdDropdown" class="dropdown-options"></div>
+            <input type="hidden" id="staffIdHidden" name="staffId">
+        </div>
+
         <div class="field-label">NAME OF LECTURER *</div>
         <div id="lecturerSearchContainer" class="searchable-select-wrapper">
             <input type="text" id="lecturerSearchInput" class="searchable-input" 
@@ -197,6 +262,18 @@
         <select id="program" name="program" required>
             <option value="" disabled selected>Select program</option>
         </select>
+
+        <div class="field-label">MODE OF DELIVERY *</div>
+        <div class="mode-delivery-container">
+            <label class="mode-option">
+                <input type="radio" name="modeOfDelivery" value="Face-to-Face" required>
+                <span class="mode-text">Face-to-Face</span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="modeOfDelivery" value="Online">
+                <span class="mode-text">Online</span>
+            </label>
+        </div>
 
         <div class="field-label">CLASS LEVEL *</div>
         <div class="radio-container">
@@ -220,6 +297,12 @@
         <div class="field-label">CLASS END TIME *</div>
         <input type="time" id="endTime" name="endTime" required>
 
+        <div class="field-label">DURATION OF CLASS</div>
+        <div class="duration-display" id="durationDisplay">
+            <span id="durationText">— hrs — mins</span>
+        </div>
+        <input type="hidden" id="duration" name="duration">
+
         <div class="field-label">ATTENDANCE STATUS *</div>
         <div class="radio-container">
             <label><input type="radio" name="attendance" value="Present" required> Present</label><br>
@@ -242,98 +325,309 @@
 </div>
 
 <script>
-// ========== 📋 TUTORS LIST — from tutors_monitoring.xlsx ==========
+// ========== 🪪 STAFF ID → LECTURER NAME MAP ==========
+// Source: Know Your Postgraduate Tutor ID — University of Cape Coast, College of Distance Education
+const STAFF_ID_MAP = {
+    "PGT0276": "Abdul-Jaleel Saani",
+    "PGT0047": "Abraham Ansong",
+    "PGT0500": "Abraham Gyamfi",
+    "PGT0118": "Abraham Yeboah",
+    "PGT0414": "Adam Abu",
+    "PGT0268": "Alex Adobaw Bansah",
+    "PGT0298": "Alex Boadi Dankyi",
+    "PGT0468": "Alfred Kuranchie",
+    "PGT0797": "Alhassan Karakara",
+    "PGT0420": "Alimatu Saadia Yussif",
+    "PGT0331": "Amina Jangu Alhassan",
+    "PGT0263": "Anastasia Nana Ama Kumi-Korsah",
+    "PGT0089": "Andrews Cobbinah",
+    "PGT0124": "Anthony Adu - Asare Idun",
+    "PGT0361": "Anthony Kwabena Nkyi",
+    "PGT0356": "Anthony Owusu",
+    "PGT0055": "Augustus Daniel Arko",
+    "PGT0224": "Baba Mumuni Yidana",
+    "PGT0102": "Bakari Y Dramanu",
+    "PGT0204": "Beatrice Somuah",
+    "PGT0017": "Benedict Jnr Afful",
+    "PGT0318": "Bernard Fentim Dankwa",
+    "PGT0006": "Bernard Yaw Acquah",
+    "PGT0075": "Brandford Bervell",
+    "PGT0174": "Camara Kwesi Obeng",
+    "PGT0132": "Carl Hope Korkpoe",
+    "PGT0341": "Charles Adabo Oppong",
+    "PGT0576": "Charles Asante",
+    "PGT0452": "Charles Kwamena Hackman Essel",
+    "PGT0328": "Charles Roland Haruna",
+    "PGT0301": "Christopher Mensah Adosi",
+    "PGT0307": "Christopher Yao Gadese",
+    "PGT0290": "Christopher Yarkwah",
+    "PGT0159": "Clara Araba Mills",
+    "PGT0484": "Collins Annobil",
+    "PGT0039": "Comfort A.A Anipa",
+    "PGT0014": "Cornelius Adorm - Takyi",
+    "PGT0330": "Cosmos Cobbold",
+    "PGT0258": "Dacoster Kweku Boakye",
+    "PGT0139": "Daisy Ofosuhene",
+    "PGT0022": "Daniel Agyapong",
+    "PGT0291": "Daniel Gbormittah",
+    "PGT0501": "Daniel K. Anhwere",
+    "PGT0858": "Daniel Miezah",
+    "PGT0177": "Daniel Ofori",
+    "PGT0502": "Darlington Adanfo",
+    "PGT0189": "Dominic K Owusu",
+    "PGT0492": "Dominic Owusu",
+    "PGT0544": "Dorcas Pearl. Slippe",
+    "PGT0285": "Dorothy Adentwi - Hayford",
+    "PGT0049": "Dorothy Amfo Antiri",
+    "PGT0344": "Douglas Darko Agyei",
+    "PGT0078": "E. O. Agyenim Boateng",
+    "PGT0581": "Ebenezer Oppong-Mensah",
+    "PGT0218": "Edmond Nyamah Yeboah",
+    "PGT0417": "Edmund Kwesi Agormedah",
+    "PGT0026": "Edward Akomaning",
+    "PGT0029": "Edward Amarteifio",
+    "PGT0222": "Edward Marfo Yiadom",
+    "PGT0274": "Ekua T. Amua-Sekyi",
+    "PGT0192": "Elizabeth Annan Prah",
+    "PGT0519": "Elizabeth D. Agyei",
+    "PGT0069": "Elliot Kojo Attipoe",
+    "PGT0262": "Emmanuel Arthur Nyarko",
+    "PGT0272": "Emmanuel Asante",
+    "PGT0203": "Emmanuel Asmah",
+    "PGT0588": "Emmanuel Attobrah",
+    "PGT0570": "Emmanuel Dortey Tetteh",
+    "PGT0066": "Emmanuel Ekow Asmah",
+    "PGT0792": "Emmanuel Essandoh",
+    "PGT0116": "Emmanuel Gyamfi",
+    "PGT0453": "Emmanuel Tchouchou",
+    "PGT0862": "Emmanuel Y. Tenkorang",
+    "PGT0054": "Emmanuel Yaw Arhin",
+    "PGT0082": "Eric Amoo Bondzie",
+    "PGT0859": "Eric Atta Quainoo",
+    "PGT0114": "Eric Gonu",
+    "PGT0861": "Eric Magnus Wilmot",
+    "PGT0784": "Ernest Larbi",
+    "PGT0444": "Ernestina Larbie",
+    "PGT0456": "Esmond Naalu Kuuyelleh",
+    "PGT0308": "Eugene Kwarteng Nantwi",
+    "PGT0144": "Evans Frimpong Manso",
+    "PGT0257": "Evelyn Yeboah Nyamah",
+    "PGT0311": "Fatima Iddrisu Abu",
+    "PGT0135": "Felix Kumedzro",
+    "PGT0182": "Felix Kwame Opoku",
+    "PGT0045": "Francis Ansah",
+    "PGT0856": "Francis Arthur",
+    "PGT0156": "Francis O. Boachie Mensah",
+    "PGT0213": "Francis Oppong Twum",
+    "PGT0207": "Francis Taale",
+    "PGT0296": "Francis Tabiri",
+    "PGT0399": "Frederick Ocansey",
+    "PGT0802": "Frederick Ofori Nuako",
+    "PGT0235": "Gabriel Kwesi Aboagye",
+    "PGT0181": "George Oduro Okyire",
+    "PGT0208": "George Tackie",
+    "PGT0469": "George Tweneboah",
+    "PGT0799": "Gertrude Torto",
+    "PGT0464": "Gideon Kwesi Obosu",
+    "PGT0538": "Gloria Essilfie",
+    "PGT0168": "Gloria Nyame",
+    "PGT0590": "Godwin Adolf Idan",
+    "PGT0472": "Helena N. K. Tetteh",
+    "PGT0165": "Hope Pius Nudzor",
+    "PGT0278": "Ibrahim Imoro",
+    "PGT0137": "Innocent Senyo Kwasi Acquah",
+    "PGT0214": "Irene Vanderpuye",
+    "PGT0813": "Isaac Ampah Mensah",
+    "PGT0152": "Isaac Armah Mensah",
+    "PGT0287": "Isaac Atta Kwenin",
+    "PGT0275": "Isaac Benning",
+    "PGT0333": "Isaac Bentum Enning",
+    "PGT0253": "Isaac Christopher Otoo",
+    "PGT0098": "Isaac Dasmani",
+    "PGT0103": "Isaac G Dukuh",
+    "PGT0133": "Isaac Kosi",
+    "PGT0042": "Isaac Kwadwo Anim",
+    "PGT0211": "Isaac Kwao Tetteh",
+    "PGT0580": "Isaac Nunoo",
+    "PGT0157": "Ishmael Mensah",
+    "PGT0828": "Ivy Ama Kpodoe",
+    "PGT0166": "Jacob Nunoo",
+    "PGT0461": "James Amonoo",
+    "PGT0191": "James Atta Peprah",
+    "PGT0131": "Janet Koomson",
+    "PGT0457": "Japhet Osiakwan",
+    "PGT0021": "Joan Ark Agyapong",
+    "PGT0406": "Joana Eva Dodoo",
+    "PGT0800": "John Ekow Laryea",
+    "PGT0113": "John Gatsi",
+    "PGT0380": "John Windie",
+    "PGT0046": "John Windie Ansah",
+    "PGT0136": "Joseph Tuffour Kwarteng",
+    "PGT0836": "Josephine Antenkyi Bentil",
+    "PGT0199": "Joshua Sebu",
+    "PGT0835": "Joy Olive Boye",
+    "PGT0299": "Joyce K. Dankyi",
+    "PGT0270": "Justice Kofi Armah",
+    "PGT0465": "Justina Adams",
+    "PGT0289": "K. Asamoah - Gyimah",
+    "PGT0076": "Kankam Boadu",
+    "PGT0129": "Kassimu Issau",
+    "PGT0195": "Katara Salifu",
+    "PGT0857": "Kennedy Etse Dogbey",
+    "PGT0332": "Kofi Acheaw Owusu",
+    "PGT0097": "Kwabena Nkansah Darfor",
+    "PGT0460": "Kwame Nkrumah",
+    "PGT0090": "Kyeremeh Tawiah Dabone",
+    "PGT0084": "Leticia Bosu",
+    "PGT0416": "Leticia Sam",
+    "PGT0551": "Linda Otoo",
+    "PGT0594": "Lydia A. Dankyi",
+    "PGT0559": "Maame Gyamfuah. Asante Mensah",
+    "PGT0442": "Magdalene Brown",
+    "PGT0826": "Manasseh E.K Amu",
+    "PGT0072": "Marie A. B Bakah",
+    "PGT0555": "Mark Amponsah",
+    "PGT0491": "Mark Bigool",
+    "PGT0057": "Mark Kojo Armah",
+    "PGT0358": "Martha Pearl Okai",
+    "PGT0043": "Martin Anokye",
+    "PGT0187": "Martin Owusu",
+    "PGT0476": "Mary Donkor",
+    "PGT0172": "Maxwell Nyatsikor",
+    "PGT0206": "Maxwell Taabazuing",
+    "PGT0052": "Michael Owusu Appiah",
+    "PGT0845": "Micheal Tutu Boadu",
+    "PGT0854": "Mohammed Abubakar Abdulmoomin",
+    "PGT0404": "Mohammed Alhassan Nurudeen",
+    "PGT0226": "Mohammed Bello Zuberu",
+    "PGT0537": "Monica Ofosu-Koranteng",
+    "PGT0543": "Morris Monkuni Yendu",
+    "PGT0003": "Moses Abnory",
+    "PGT0254": "Moses Segbenya",
+    "PGT0183": "Nana Yaw Oppong",
+    "PGT0188": "Nichodemus Osei Owusu",
+    "PGT0109": "Nick Fobih",
+    "PGT0016": "Ophelia Affreh",
+    "PGT0807": "Osman Light",
+    "PGT0251": "Patrick Darkwah",
+    "PGT0028": "Patrick Kwarshie Akorsu",
+    "PGT0147": "Paul Agyei Mensah",
+    "PGT0024": "Paul Ahiatrogah",
+    "PGT0395": "Paul Arhin Jnr",
+    "PGT0167": "Paul Nyagorme",
+    "PGT0030": "Peace Ametepi",
+    "PGT0428": "Peter Anti Partey",
+    "PGT0077": "Peter Boahin",
+    "PGT0458": "Peter Brown",
+    "PGT0303": "Peterson Owusu Junior",
+    "PGT0422": "Phanuel Wunu",
+    "PGT0329": "Prince Yeboah Asare",
+    "PGT0447": "Raymond K. Elikplim",
+    "PGT0149": "Rebecca Dei Mensah",
+    "PGT0509": "Rebecca Kaedabi Donkor",
+    "PGT0545": "Regina Esi. Turkson",
+    "PGT0146": "Regina Mawusi",
+    "PGT0801": "Rhoda Anyameh Botchway",
+    "PGT0516": "Richard Arthur",
+    "PGT0309": "Richard Lionel Gorni",
+    "PGT0190": "Richmond Panyin",
+    "PGT0121": "Rita Adzovie Holm",
+    "PGT0086": "Ruth Annan Brew",
+    "PGT0053": "Salomey Ofori Appiah",
+    "PGT0248": "Sampson Achina",
+    "PGT0808": "Samuel K. Nkansah",
+    "PGT0023": "Samuel Kwaku Agyei",
+    "PGT0117": "Samuel Tieku Gyansah",
+    "PGT0034": "Samuel Yaw Ampofo",
+    "PGT0130": "Seyram Kawor",
+    "PGT0234": "Stanley K. M. Semarco",
+    "PGT0860": "Stephanie Ekua Frimpong",
+    "PGT0327": "Stephen Antwi Winful",
+    "PGT0099": "Stephen Doh Fia",
+    "PGT0446": "Sylvester Tenkorang",
+    "PGT0093": "T. K. Odame Danso",
+    "PGT0038": "Tahir Ahmed Andzie",
+    "PGT0056": "Valentina Arkorful",
+    "PGT0321": "Vera Arhin",
+    "PGT0040": "Vera Sey Ankomah",
+    "PGT0011": "Vincent Adela",
+    "PGT0577": "Vincent Assanful",
+    "PGT0305": "Vincent Mensah Minadzi",
+    "PGT0462": "William Boateng",
+    "PGT0085": "William Gabriel Brafu- Insaidoo",
+    "PGT0798": "William Godfred Cantah",
+    "PGT0855": "William Osei",
+    "PGT0342": "Williams Osei"
+};
+
+// Reverse map: name → ID (for auto-filling ID when name is selected)
+const NAME_TO_ID_MAP = {};
+Object.entries(STAFF_ID_MAP).forEach(([id, name]) => { NAME_TO_ID_MAP[name] = id; });
+
+const STAFF_IDS = Object.keys(STAFF_ID_MAP);
+
+// ========== 📋 TUTORS LIST — from Know Your Postgraduate Tutor ID (UCC CoDE) ==========
 const TUTORS_ARRAY = [
-    "Vasty Arthur-Nyarko", "Maxwell Tsibu", "Derrick Amoako", "Maxwell Tsibu", "Wilberforce Obiri",
-    "Lewis Owusu", "Emmanuel Kodom", "Samuel Segbefia", "Peter Tweneboah junior", "Francis Azubire",
-    "Justice Oduro", "Ibrahim Kyeremeh", "Kennedy Owusu", "Felix Awutey", "Kennedy Owusu",
-    "Damian Amewu", "Ransford Addo - asare", "Julius Kpanley", "Paul Coffie", "Bismark Dedzaa",
-    "Bismark Dedzaa", "Joseph Antwi", "Peter Agyemang", "Kofi Kwakye", "Kofi Kwakye",
-    "Prince Kusi", "Robert Quarcoo", "Evans Mensah", "Vivian Kissiwaa", "Isaac Yeboah",
-    "Bright Yeboah", "Emmanuel Oduro-mensah", "Bright Yeboah", "Sampson Effah", "Samuel Ampadu",
-    "Michael Anobi", "Clement Owusu-cole", "Silas Badzi", "Yeboah Obiri", "George Obeng",
-    "Clement Owusu-cole", "Esther Tontoh", "Atta seidu Ishmeal", "Kofi Afriyie", "Solomon Adjei",
-    "Esther Tontoh", "Nathaniel Ahaja", "Felix Vorvor", "Gifty Angmor", "Angela Akowuah",
-    "Juliet Assumeng", "Solomon Adu-gyamfi", "Abdul-latif Alhassan", "Divine Kekesi", "Joseph Akoettey",
-    "Andrews Obeng", "Francis Anyagre", "John York-williams", "Peter Akpalu", "Mercy Degbortse",
-    "Moses Avorkpo", "Calvin Attricki", "Victoria Ansah", "Peter Akpalu", "Comfort Edusei",
-    "Francis Boama", "Gordon Gyeabour", "Ibrahim Tabiri", "Gordon Asante", "Redeemer Korda",
-    "Issifu Musah", "Francesca Anowie", "Felix Amoaning", "Richmond Atiasah", "Desmond Owusu",
-    "Lawrencia Essien", "Charles Tuffour", "Mercy Oware", "Francis Acheampong", "Lydia Amissapo",
-    "Lydia Keteku", "Patrick Larbi", "Bashiru Akubilla", "John Appiah", "James Adeaba",
-    "Ebenezer Kporyi", "Lydia Amissapo", "Isaac Nyarko", "Boniface Aabeyir", "Daniel Ofori",
-    "Philomena Ahey", "Edward Nkrumah", "Eric Andoh", "John Yankey", "Samuel Biney",
-    "Philomena Ahey", "Ernest Asinor", "Naomi Neequaye", "Yahaya Alhaji", "Ambrose Darku",
-    "Samuel Osei", "Derick Antoh", "Daniel Ofori", "Richard Osei ampofo", "Kwabena Kwakye",
-    "Matthew Bediako", "Felix Amuzu", "Selina Peprah", "Stephen Kyeremeh", "Dennis kwabena Frimpong",
-    "Kennedy Darko", "Zakaria Alhassan", "Samuel Opoku", "Charles Osei bonsu", "Selina Peprah",
-    "Eric Damtse", "Lydia Keteku", "David Amoah", "Samuel Aning", "Victor Klevor",
-    "Obed Atta-asamoah", "Stephen Addison", "Haruna Emmanuel", "Samuel Otchere", "Kwashiga Adjorlolo",
-    "Fridaus Dramani", "Adjei Frimpong", "Munkaila Dasumani", "Ekow Arthur-aidoo", "Douglas Manu",
-    "Christopher Gyau", "Amadu Alhassan", "Rita Kwayisi", "Evelyn Benneh", "Bright Addae",
-    "Christian Dadzie-bonney", "Francis Boama", "Joseph Asiedu", "Eric Santos", "Angela Dawutey",
-    "Paul Yankey", "Emmanuel Dorsah", "Francis Yorke", "Abdoul-aziz Bashiru", "Frank Glago",
-    "Thomas Cudjoe", "Jacob Agyemang", "John Kwao", "Tobias Attipoe", "Osei adu Addo",
-    "John Kwao", "Danladi Buukinter", "Christoph Gadese", "Frederick Achaw", "Danladi Buukinter",
-    "Samuel Anim kwarteng", "Abigail Baidoo", "Fortune Atsu", "Fusein Seidu", "Frederick Achaw",
-    "Akofaba Gideon", "Prince Gyasi", "Isaac Boateng", "James courage Awuah", "Fuseini Seidu",
-    "Muftawu Mugsinu", "Denis Asare", "Hakibu sinto Mustapha", "Francis Azubire", "James Awuah",
-    "Samuel Mireku", "Prince Kotoko", "Patrick Koomson", "Emmanuel Atobrah", "Samuel Acheampong",
-    "Sally Adzaku", "Victoria Ansah", "Rashid Giwah", "Matilda Omane -agyekum", "Eric atta Quainoo",
-    "Gordon Kyei", "Ellie Opoku", "Cornelius Afesi", "Enoch Bremang", "Mohammed Issah",
-    "Anna Sakyiwaa", "Samuel Amponsah", "Gariba Iddrisu", "Anthony Sampson", "Edward augustus Mensah",
-    "John-bosco Puotege", "Kwadwo Akowuah", "Susuoroka Gabina", "Lucinda Tokro", "Joseph Wodzebeyew",
-    "Emilyn Ofosu-amaah", "Jafaratu Mahama", "Bright Ayiku", "Annael Abew", "Emmanuel Siaw",
-    "Merchix Nkrumah", "Gloria Dery", "Lawrence Bosiwah", "Agricola N'eebo", "Joe emmanuel Nana otoo",
-    "Afi Nutakor", "Gershon Ladzekpo", "Eric Quansah", "Alhassan Karakara", "Emmanuel Frimpong",
-    "John Kofie", "Nelson Kwashie", "Betty Osei", "Derrick Sackey", "Kudugu Atiah",
-    "Mark Abbey", "Mark Abbey", "Stephen Acquah", "John Boadu", "Wilson Fosuh-mensah",
-    "Leonard Ahialey", "Charles Ameyaw", "Theophilus Asmah", "Obed Bosea", "Eric Deh",
-    "Emmanuel Akrobortu", "Peter Mbawini", "Enoch Appiah", "Ransford Owusu-boakye", "Evelyn Appiah",
-    "Daniel Amoah", "Emmanuel Acquah", "Anku Nutifafa", "Samuel Atobrah", "Issah Mohammed",
-    "Charles Osei bonsu", "Bright Frimpong", "Basil muokuu Muokuu", "Ebenezer Abraham", "Basil Muokuu",
-    "Agyemang Boateng", "Agyemang Boateng", "Sultan Mohammed", "Raynes Ayidan -ansah", "Bright Addae",
-    "Alexis Anzagira", "Andy Addison", "Bight Ayekple", "Edward Agyei", "Doreen Aglebe",
-    "Rose Zamey", "Daniel Botwe", "Afia Osei", "Angelina Ababio", "Justice Djanyikpor",
-    "Michael Sekyere", "Michael Sekyere", "Linda Frimpong", "John Kofie", "Alhassan K-nabia",
-    "Emmanuel Asiedu", "Anomah Emelia", "Kingsley Bekoe", "John Amoateng", "Richard Akutey",
-    "Dennis Okley", "Gabriel Mifetu", "Desmond Gasanga", "Charles Kyereme", "Divine Narh",
-    "Abubakar Adam", "Winifred Opoku", "Braimah Abdulai", "Kwasi Anokye", "Kweku Wilson",
-    "John Amoateng", "Gifty Terkper", "Isaac Tawiah", "Helen Nboyine", "Nagbila Mobire",
-    "Adjei Ernest", "Odonkor Monica", "Bernard Asiedu", "Selina Peprah", "Haruna Nsorwura",
-    "Odonkor Monica", "Sylvia Dery", "Abramani Abudu", "Benedict Quansah", "Patrick Akornortey",
-    "Emmanuel Adjorlolo", "Martin Nyamekye", "Emelia Anomah", "James Awuah", "Bright Ayekple",
-    "James Awuah", "Isaac Sackey", "Enoch Mwini", "Alice Bekure", "Fidelis Kamaayi",
-    "Daniel Amoah", "Hardi Abdul rahaman", "Ebenezer Kwegyah", "Joseph Arthur", "Yeboah Obiri",
-    "Samuel Appiah", "Ernest Damoah-asante", "Ali Mahmud", "Cosmas Nobaboma", "Daniel Tete",
-    "Christine Antwi", "Chelnye Ambrose", "Chelnye Ambrose", "Bashiru Amidu", "Dominic Aboagye",
-    "Gideon Boateng", "Peter Boahen", "Joshua Quayson - monney", "Peter Boahen", "Joshua Quayson - monney",
-    "Dickson Afreh", "Ebenezer Koranteng", "John Attah", "Justice Asante", "Matilda Omane -agyekum",
-    "Matilda Omane-agyekum", "Rolland Fiakofi", "Thomas Obuobi-ayim", "Joshua Quayson - monney", "Evans Sakyi",
-    "Richard Otwey", "Hannah Wiredu", "Hannah Wiredu", "Kwasi Opoku", "Kwasi Bediako",
-    "Evans Sakyi", "Diawuo Amankona", "Benjamin Salakpi", "Festus Nongnenuor", "Isaac Ampem",
-    "Esther Owusu", "Elijah Awuley", "Mohammed Moro", "Isaac Nuopre", "Jerome Obeng",
-    "Nuhu Imoro", "Emmanuel Adjei", "Evelyn Kpogo", "Peter Kwadwo", "Peter Nyarbilla",
-    "William Dautey", "Lawrencia Donkor acheampong", "George Assibi", "Titus Ennin", "Ibrahim Musah",
-    "Bartholomew Dabuo", "Christopher Kutina", "Henry Kuubar", "Stephen Oppong", "Briamah Abdulai",
-    "Peter Dontah", "Elijah Avevor", "Paul Bayiri", "Haruna Mbugri", "Isaac Ennu",
-    "William Aniagyei", "Gabriel Gyasi", "Felix Dongballe", "Hannah Wiredu", "Kwadwo Ahamata",
-    "Solomon Dunyo", "Solomon Dunyo", "James Aboagyejb", "James Aboagyejbo", "Joyce Nyanyovor",
-    "Abudu Korah", "Zakaria Shanunu", "Kingsley Quartey", "Mary Jackson", "Bright Zodanu",
-    "Michael Owusu", "Saviour Kuatudor", "Ebenezer Sarpong", "James Appeaning", "Isaac Boateng",
-    "Emmanuel Eshun", "Victoria Lawson", "Christoph Mortey", "Mawufemor Kpogah", "Bright Acquah",
-    "Bennet Kwakye", "Richard Acquah-goulbourne", "Akwasi Afrane", "Joshua Wilson", "Hakeem Musah",
-    "Alex Adobaw-bansah", "Patrick Adem", "Charles l Ameyaw", "Bartholomew Mosonsieyiri", "Eric Darko",
-    "Alfred Dorgbetor", "Peter Dontah", "Isaac Nyarko", "Isaac Nyarko", "George Nyaku",
-    "Nathaniel Quansah", "Benjamin Boye", "Benjamin Boye", "Benedicta Titriku", "Joseph donkor Mensah",
-    "Jonas Adu", "Gideon Agbanyo", "Kwadwo Essel", "Peter Atubigah", "George Cobbold",
-    "Kwadwo Owusu", "Abraham Avorgbedor", "Kwadwo Owusu", "Anthony Gyabeng", "Mark Dadzie",
-    "Samuel Darkwah", "Heron Kudoto", "James Nyarko", "Comfort Bonsu", "Millicent Asempapa",
-    "Gladys Seho-ahiable", "Iddrisu Issaka", "Rev samuel Takyi", "Joana Bortey", "Mohamed Askia",
-    "Benedict Ayaaba", "Kwaku Koranteng", "Koame Mieza", "Joshua Adadey", "Roland Takyi",
-    "Margaret Bassah", "Joseph Blankson", "Ebenezer Kpelly", "John Avoka", "Wisdom Torkor",
-    "Daniel Agyei-kyeremeh", "Raynes Ayidan -ansah", "Gyakari Akobo", "Doris Amankona", "Patricia Klutse",
-    "Vera Obeng", "Alex Paintsil", "Dorcas Slippe", "Dorothy Oppong-agyare", "Mary Ahenful"
+    "Abdul-Jaleel Saani", "Abraham Ansong", "Abraham Gyamfi", "Abraham Yeboah",
+    "Adam Abu", "Alex Adobaw Bansah", "Alex Boadi Dankyi", "Alfred Kuranchie",
+    "Alhassan Karakara", "Alimatu Saadia Yussif", "Amina Jangu Alhassan",
+    "Anastasia Nana Ama Kumi-Korsah", "Andrews Cobbinah", "Anthony Adu - Asare Idun",
+    "Anthony Kwabena Nkyi", "Anthony Owusu", "Augustus Daniel Arko", "Baba Mumuni Yidana",
+    "Bakari Y Dramanu", "Beatrice Somuah", "Benedict Jnr Afful", "Bernard Fentim Dankwa",
+    "Bernard Yaw Acquah", "Brandford Bervell", "Camara Kwesi Obeng", "Carl Hope Korkpoe",
+    "Charles Adabo Oppong", "Charles Asante", "Charles Kwamena Hackman Essel",
+    "Charles Roland Haruna", "Christopher Mensah Adosi", "Christopher Yao Gadese",
+    "Christopher Yarkwah", "Clara Araba Mills", "Collins Annobil", "Comfort A.A Anipa",
+    "Cornelius Adorm - Takyi", "Cosmos Cobbold", "Dacoster Kweku Boakye", "Daisy Ofosuhene",
+    "Daniel Agyapong", "Daniel Gbormittah", "Daniel K. Anhwere", "Daniel Miezah",
+    "Daniel Ofori", "Darlington Adanfo", "Dominic K Owusu", "Dominic Owusu",
+    "Dorcas Pearl. Slippe", "Dorothy Adentwi - Hayford", "Dorothy Amfo Antiri",
+    "Douglas Darko Agyei", "E. O. Agyenim Boateng", "Ebenezer Oppong-Mensah",
+    "Edmond Nyamah Yeboah", "Edmund Kwesi Agormedah", "Edward Akomaning",
+    "Edward Amarteifio", "Edward Marfo Yiadom", "Ekua T. Amua-Sekyi",
+    "Elizabeth Annan Prah", "Elizabeth D. Agyei", "Elliot Kojo Attipoe",
+    "Emmanuel Arthur Nyarko", "Emmanuel Asante", "Emmanuel Asmah", "Emmanuel Attobrah",
+    "Emmanuel Dortey Tetteh", "Emmanuel Ekow Asmah", "Emmanuel Essandoh",
+    "Emmanuel Gyamfi", "Emmanuel Tchouchou", "Emmanuel Y. Tenkorang", "Emmanuel Yaw Arhin",
+    "Eric Amoo Bondzie", "Eric Atta Quainoo", "Eric Gonu", "Eric Magnus Wilmot",
+    "Ernest Larbi", "Ernestina Larbie", "Esmond Naalu Kuuyelleh", "Eugene Kwarteng Nantwi",
+    "Evans Frimpong Manso", "Evelyn Yeboah Nyamah", "Fatima Iddrisu Abu", "Felix Kumedzro",
+    "Felix Kwame Opoku", "Francis Ansah", "Francis Arthur", "Francis O. Boachie Mensah",
+    "Francis Oppong Twum", "Francis Taale", "Francis Tabiri", "Frederick Ocansey",
+    "Frederick Ofori Nuako", "Gabriel Kwesi Aboagye", "George Oduro Okyire", "George Tackie",
+    "George Tweneboah", "Gertrude Torto", "Gideon Kwesi Obosu", "Gloria Essilfie",
+    "Gloria Nyame", "Godwin Adolf Idan", "Helena N. K. Tetteh", "Hope Pius Nudzor",
+    "Ibrahim Imoro", "Innocent Senyo Kwasi Acquah", "Irene Vanderpuye", "Isaac Ampah Mensah",
+    "Isaac Armah Mensah", "Isaac Atta Kwenin", "Isaac Benning", "Isaac Bentum Enning",
+    "Isaac Christopher Otoo", "Isaac Dasmani", "Isaac G Dukuh", "Isaac Kosi",
+    "Isaac Kwadwo Anim", "Isaac Kwao Tetteh", "Isaac Nunoo", "Ishmael Mensah",
+    "Ivy Ama Kpodoe", "Jacob Nunoo", "James Amonoo", "James Atta Peprah", "Janet Koomson",
+    "Japhet Osiakwan", "Joan Ark Agyapong", "Joana Eva Dodoo", "John Ekow Laryea",
+    "John Gatsi", "John Windie", "John Windie Ansah", "Joseph Tuffour Kwarteng",
+    "Josephine Antenkyi Bentil", "Joshua Sebu", "Joy Olive Boye", "Joyce K. Dankyi",
+    "Justice Kofi Armah", "Justina Adams", "K. Asamoah - Gyimah", "Kankam Boadu",
+    "Kassimu Issau", "Katara Salifu", "Kennedy Etse Dogbey", "Kofi Acheaw Owusu",
+    "Kwabena Nkansah Darfor", "Kwame Nkrumah", "Kyeremeh Tawiah Dabone", "Leticia Bosu",
+    "Leticia Sam", "Linda Otoo", "Lydia A. Dankyi", "Maame Gyamfuah. Asante Mensah",
+    "Magdalene Brown", "Manasseh E.K Amu", "Marie A. B Bakah", "Mark Amponsah",
+    "Mark Bigool", "Mark Kojo Armah", "Martha Pearl Okai", "Martin Anokye", "Martin Owusu",
+    "Mary Donkor", "Maxwell Nyatsikor", "Maxwell Taabazuing", "Michael Owusu Appiah",
+    "Micheal Tutu Boadu", "Mohammed Abubakar Abdulmoomin", "Mohammed Alhassan Nurudeen",
+    "Mohammed Bello Zuberu", "Monica Ofosu-Koranteng", "Morris Monkuni Yendu",
+    "Moses Abnory", "Moses Segbenya", "Nana Yaw Oppong", "Nichodemus Osei Owusu",
+    "Nick Fobih", "Ophelia Affreh", "Osman Light", "Patrick Darkwah",
+    "Patrick Kwarshie Akorsu", "Paul Agyei Mensah", "Paul Ahiatrogah", "Paul Arhin Jnr",
+    "Paul Nyagorme", "Peace Ametepi", "Peter Anti Partey", "Peter Boahin", "Peter Brown",
+    "Peterson Owusu Junior", "Phanuel Wunu", "Prince Yeboah Asare", "Raymond K. Elikplim",
+    "Rebecca Dei Mensah", "Rebecca Kaedabi Donkor", "Regina Esi. Turkson", "Regina Mawusi",
+    "Rhoda Anyameh Botchway", "Richard Arthur", "Richard Lionel Gorni", "Richmond Panyin",
+    "Rita Adzovie Holm", "Ruth Annan Brew", "Salomey Ofori Appiah", "Sampson Achina",
+    "Samuel K. Nkansah", "Samuel Kwaku Agyei", "Samuel Tieku Gyansah", "Samuel Yaw Ampofo",
+    "Seyram Kawor", "Stanley K. M. Semarco", "Stephanie Ekua Frimpong",
+    "Stephen Antwi Winful", "Stephen Doh Fia", "Sylvester Tenkorang", "T. K. Odame Danso",
+    "Tahir Ahmed Andzie", "Valentina Arkorful", "Vera Arhin", "Vera Sey Ankomah",
+    "Vincent Adela", "Vincent Assanful", "Vincent Mensah Minadzi", "William Boateng",
+    "William Gabriel Brafu- Insaidoo", "William Godfred Cantah", "William Osei", "Williams Osei"
 ];
 const UNIQUE_TUTORS = [...new Set(TUTORS_ARRAY)];
 
@@ -420,7 +714,7 @@ const BED_PROGRAMS = [
 
 // ========== SEARCHABLE DROPDOWN FACTORY ==========
 function createSearchableDropdown(config) {
-    const { inputId, dropdownId, hiddenId, dataArray, placeholder } = config;
+    const { inputId, dropdownId, hiddenId, dataArray, placeholder, onSelect } = config;
 
     const input = document.getElementById(inputId);
     const dropdown = document.getElementById(dropdownId);
@@ -471,6 +765,7 @@ function createSearchableDropdown(config) {
         hidden.value = value;
         dropdown.classList.remove('show');
         input.setCustomValidity('');
+        if (typeof onSelect === 'function') onSelect(value);
     }
 
     // --- attach events ---
@@ -511,13 +806,36 @@ function createSearchableDropdown(config) {
 
 // ========== INITIALISE ALL DROPDOWNS ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Lecturer search
+    // Staff ID search (auto-fills lecturer name on selection)
+    createSearchableDropdown({
+        inputId: 'staffIdSearchInput',
+        dropdownId: 'staffIdDropdown',
+        hiddenId: 'staffIdHidden',
+        dataArray: STAFF_IDS,
+        placeholder: '🔍 Type Staff ID...',
+        onSelect: function(selectedId) {
+            const name = STAFF_ID_MAP[selectedId];
+            if (name) {
+                document.getElementById('lecturerSearchInput').value = name;
+                document.getElementById('lecturer').value = name;
+            }
+        }
+    });
+
+    // Lecturer search (also auto-fills Staff ID if found)
     createSearchableDropdown({
         inputId: 'lecturerSearchInput',
         dropdownId: 'lecturerDropdown',
         hiddenId: 'lecturer',
         dataArray: UNIQUE_TUTORS,
-        placeholder: '🔍 Type to search lecturer...'
+        placeholder: '🔍 Type to search lecturer...',
+        onSelect: function(selectedName) {
+            const id = NAME_TO_ID_MAP[selectedName];
+            if (id) {
+                document.getElementById('staffIdSearchInput').value = id;
+                document.getElementById('staffIdHidden').value = id;
+            }
+        }
     });
 
     // Course search
@@ -533,6 +851,10 @@ document.addEventListener('DOMContentLoaded', function() {
     populateProgramDropdown();
     setDefaultDate();
     setupFormSubmission(document.getElementById('monitoringForm'));
+
+    // Duration calculation
+    document.getElementById('startTime').addEventListener('change', calculateDuration);
+    document.getElementById('endTime').addEventListener('change', calculateDuration);
 });
 
 // ========== POPULATE PROGRAM DROPDOWN ==========
@@ -551,8 +873,46 @@ function setDefaultDate() {
     if (d) d.value = new Date().toISOString().split('T')[0];
 }
 
+// ========== DURATION CALCULATION ==========
+function calculateDuration() {
+    const start = document.getElementById('startTime').value;
+    const end = document.getElementById('endTime').value;
+    const display = document.getElementById('durationDisplay');
+    const text = document.getElementById('durationText');
+    const hidden = document.getElementById('duration');
+
+    if (!start || !end) {
+        text.textContent = '— hrs — mins';
+        hidden.value = '';
+        display.classList.remove('invalid');
+        return;
+    }
+
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    const startMins = sh * 60 + sm;
+    const endMins = eh * 60 + em;
+    const diff = endMins - startMins;
+
+    if (diff <= 0) {
+        text.textContent = 'End time must be after start time';
+        hidden.value = '';
+        display.classList.add('invalid');
+        return;
+    }
+
+    display.classList.remove('invalid');
+    const hrs = Math.floor(diff / 60);
+    const mins = diff % 60;
+    const label = hrs > 0
+        ? (mins > 0 ? `${hrs} hr${hrs > 1 ? 's' : ''} ${mins} min${mins > 1 ? 's' : ''}` : `${hrs} hr${hrs > 1 ? 's' : ''}`)
+        : `${mins} min${mins > 1 ? 's' : ''}`;
+    text.textContent = label;
+    hidden.value = label;
+}
+
 // ========== FORM SUBMISSION & VALIDATION ==========
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0BoHL31ggZaa5slbO4jZKRgvRn1TENb4kbcKvtHg8muRhUmqLg-h1uFMJSoS_mMb4/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysRahT2AwO6HqWl-oz7gzAHqeHMR7bN-koFQjvfDy-Dv9NpkUOOKAyoBU4bhtxVxqP/exec';
 
 function setupFormSubmission(form) {
     form.addEventListener('submit', async function(e) {
@@ -586,6 +946,7 @@ function validateForm() {
         }
     });
     if (!document.querySelector('input[name="classLevel"]:checked')) { alert('Select class level'); ok = false; }
+    if (!document.querySelector('input[name="modeOfDelivery"]:checked')) { alert('Select mode of delivery'); ok = false; }
     if (!document.querySelector('input[name="attendance"]:checked')) { alert('Select attendance'); ok = false; }
     return ok;
 }
@@ -594,10 +955,23 @@ function prepareFormData() {
     const data = {};
     new FormData(document.getElementById('monitoringForm')).forEach((v,k) => data[k]=v);
     data.formType = 'Undergraduate';
+
+    // Radio buttons — must be captured explicitly as FormData misses unchecked ones
     const cl = document.querySelector('input[name="classLevel"]:checked');
     if (cl) data.classLevel = cl.value;
+
     const att = document.querySelector('input[name="attendance"]:checked');
     if (att) data.attendance = att.value;
+
+    const mod = document.querySelector('input[name="modeOfDelivery"]:checked');
+    if (mod) data.modeOfDelivery = mod.value;
+
+    // Staff ID (hidden field — ensure it's included)
+    data.staffId = document.getElementById('staffIdHidden').value;
+
+    // Duration (hidden field populated by calculateDuration())
+    data.duration = document.getElementById('duration').value;
+
     return data;
 }
 
@@ -639,6 +1013,8 @@ function resetForm() {
     populateProgramDropdown();
 
     // Clear search inputs and hidden fields
+    document.getElementById('staffIdSearchInput').value = '';
+    document.getElementById('staffIdHidden').value = '';
     document.getElementById('lecturerSearchInput').value = '';
     document.getElementById('lecturer').value = '';
     document.getElementById('courseSearchInput').value = '';
