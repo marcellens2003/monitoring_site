@@ -214,6 +214,72 @@
 </head>
 <body>
 
+<script type="module">
+    // ====== AUTH GUARD — keep this BEFORE the rest of the page ======
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut }
+        from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+    // Use the SAME config object as index.html
+    const firebaseConfig = {
+        apiKey: "AIzaSyCzgOGc51Qr6DXnJ-zkczBtGniYNLf0jOw",
+        authDomain: "monitoringucc.firebaseapp.com",
+        projectId: "monitoringucc",
+        storageBucket: "monitoringucc.firebasestorage.app",
+        messagingSenderId: "210063574932",
+        appId: "1:210063574932:web:8ccd563312321dcd2af181"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Hide the page until we know the user is authenticated.
+    document.documentElement.style.visibility = 'hidden';
+
+    onAuthStateChanged(auth, (user) => {
+        // With phone-number auth, the Firebase account has no displayName
+        // and no email — the monitor's identity (Staff ID + name) is set by
+        // index.html in sessionStorage AFTER the SMS code is verified. So
+        // require BOTH a signed-in Firebase user AND a Staff ID; missing
+        // either means the session is incomplete and we bounce to login.
+        const hasStaffId = !!sessionStorage.getItem('monitorStaffId');
+        if (user && hasStaffId) {
+            document.documentElement.style.visibility = 'visible';
+            if (typeof window.fillMonitorFromLogin === 'function') {
+                window.fillMonitorFromLogin();
+            }
+        } else {
+            sessionStorage.removeItem('monitorStaffId');
+            sessionStorage.removeItem('monitorName');
+            // If a phone session exists without a Staff ID (shouldn't
+            // happen, but be defensive), sign it out so the user starts
+            // clean at index.html.
+            if (user) {
+                signOut(auth).finally(() =>
+                    window.location.replace('index.html'));
+            } else {
+                window.location.replace('index.html');
+            }
+        }
+    });
+
+    // Expose logout for the button below.
+    window.logout = function () {
+        sessionStorage.removeItem('monitorStaffId');
+        sessionStorage.removeItem('monitorName');
+        signOut(auth).then(() => window.location.replace('index.html'));
+    };
+</script>
+
+<div style="max-width:700px;margin:0 auto 10px;text-align:right;">
+    <button type="button" onclick="logout()"
+        style="width:auto;margin:0;padding:8px 16px;font-size:14px;
+               background:#dc3545;border:none;border-radius:6px;
+               color:#fff;cursor:pointer;">
+        Log out
+    </button>
+</div>
+
 <div class="header">
     <div class="logo-container logo-left">
         <img src="CoDE LOGO PNG.png" alt="CoDE Logo" class="header-logo"
@@ -230,7 +296,7 @@
 </div>
 
 <div class="container">
-    <h2> Monitoring Form</h2>
+    <h2>Postgraduate Monitoring Form</h2>
 
     <form id="monitoringForm">
         <div class="field-label">STAFF ID *</div>
@@ -281,8 +347,8 @@
             <label><input type="radio" name="classLevel" value="200"> Level 200</label><br>
             <label><input type="radio" name="classLevel" value="300"> Level 300</label><br>
             <label><input type="radio" name="classLevel" value="400"> Level 400</label><br>
-            <label><input type="radio" name="classLevel" value="400"> Level 500</label><br>
-            <label><input type="radio" name="classLevel" value="400"> Level 800</label>
+            <label><input type="radio" name="classLevel" value="500"> Level 500</label><br>
+            <label><input type="radio" name="classLevel" value="800"> Level 800</label>
         </div>
 
         <div class="field-label">DATE OF MONITORING *</div>
@@ -310,8 +376,12 @@
             <label><input type="radio" name="attendance" value="Late"> Late</label>
         </div>
 
-        <div class="field-label">NAME OF MONITOR</div>
-        <input type="text" id="monitor" name="monitor" placeholder="Enter monitor's full name" required>
+        <div class="field-label">NAME OF MONITOR *</div>
+        <input type="text" id="monitor" name="monitor"
+               placeholder="Set automatically from your login"
+               readonly required
+               style="background:#f0f7ff;cursor:not-allowed;">
+        <div class="hint" id="monitorHint" style="font-size:12px;color:#666;margin-top:4px;"></div>
 
         <div class="field-label">MONITORS REMARKS</div>
         <textarea id="remarks" name="remarks" rows="4" placeholder="Enter any additional remarks or observations..."></textarea>
@@ -328,236 +398,24 @@
 // ========== 🪪 STAFF ID → LECTURER NAME MAP ==========
 // Source: Know Your Postgraduate Tutor ID — University of Cape Coast, College of Distance Education
 const STAFF_ID_MAP = {
-    "PGT0276": "Abdul-Jaleel Saani",
-    "PGT0047": "Abraham Ansong",
-    "PGT0500": "Abraham Gyamfi",
-    "PGT0118": "Abraham Yeboah",
-    "PGT0414": "Adam Abu",
-    "PGT0268": "Alex Adobaw Bansah",
-    "PGT0298": "Alex Boadi Dankyi",
-    "PGT0468": "Alfred Kuranchie",
-    "PGT0797": "Alhassan Karakara",
-    "PGT0420": "Alimatu Saadia Yussif",
-    "PGT0331": "Amina Jangu Alhassan",
-    "PGT0263": "Anastasia Nana Ama Kumi-Korsah",
-    "PGT0089": "Andrews Cobbinah",
-    "PGT0124": "Anthony Adu - Asare Idun",
-    "PGT0361": "Anthony Kwabena Nkyi",
-    "PGT0356": "Anthony Owusu",
-    "PGT0055": "Augustus Daniel Arko",
-    "PGT0224": "Baba Mumuni Yidana",
-    "PGT0102": "Bakari Y Dramanu",
-    "PGT0204": "Beatrice Somuah",
-    "PGT0017": "Benedict Jnr Afful",
-    "PGT0318": "Bernard Fentim Dankwa",
-    "PGT0006": "Bernard Yaw Acquah",
-    "PGT0075": "Brandford Bervell",
-    "PGT0174": "Camara Kwesi Obeng",
-    "PGT0132": "Carl Hope Korkpoe",
-    "PGT0341": "Charles Adabo Oppong",
-    "PGT0576": "Charles Asante",
-    "PGT0452": "Charles Kwamena Hackman Essel",
-    "PGT0328": "Charles Roland Haruna",
-    "PGT0301": "Christopher Mensah Adosi",
-    "PGT0307": "Christopher Yao Gadese",
-    "PGT0290": "Christopher Yarkwah",
-    "PGT0159": "Clara Araba Mills",
-    "PGT0484": "Collins Annobil",
-    "PGT0039": "Comfort A.A Anipa",
-    "PGT0014": "Cornelius Adorm - Takyi",
-    "PGT0330": "Cosmos Cobbold",
-    "PGT0258": "Dacoster Kweku Boakye",
-    "PGT0139": "Daisy Ofosuhene",
-    "PGT0022": "Daniel Agyapong",
-    "PGT0291": "Daniel Gbormittah",
-    "PGT0501": "Daniel K. Anhwere",
-    "PGT0858": "Daniel Miezah",
-    "PGT0177": "Daniel Ofori",
-    "PGT0502": "Darlington Adanfo",
-    "PGT0189": "Dominic K Owusu",
-    "PGT0492": "Dominic Owusu",
-    "PGT0544": "Dorcas Pearl. Slippe",
-    "PGT0285": "Dorothy Adentwi - Hayford",
-    "PGT0049": "Dorothy Amfo Antiri",
-    "PGT0344": "Douglas Darko Agyei",
-    "PGT0078": "E. O. Agyenim Boateng",
-    "PGT0581": "Ebenezer Oppong-Mensah",
-    "PGT0218": "Edmond Nyamah Yeboah",
-    "PGT0417": "Edmund Kwesi Agormedah",
-    "PGT0026": "Edward Akomaning",
-    "PGT0029": "Edward Amarteifio",
-    "PGT0222": "Edward Marfo Yiadom",
-    "PGT0274": "Ekua T. Amua-Sekyi",
-    "PGT0192": "Elizabeth Annan Prah",
-    "PGT0519": "Elizabeth D. Agyei",
-    "PGT0069": "Elliot Kojo Attipoe",
-    "PGT0262": "Emmanuel Arthur Nyarko",
-    "PGT0272": "Emmanuel Asante",
-    "PGT0203": "Emmanuel Asmah",
-    "PGT0588": "Emmanuel Attobrah",
-    "PGT0570": "Emmanuel Dortey Tetteh",
-    "PGT0066": "Emmanuel Ekow Asmah",
-    "PGT0792": "Emmanuel Essandoh",
-    "PGT0116": "Emmanuel Gyamfi",
-    "PGT0453": "Emmanuel Tchouchou",
-    "PGT0862": "Emmanuel Y. Tenkorang",
-    "PGT0054": "Emmanuel Yaw Arhin",
-    "PGT0082": "Eric Amoo Bondzie",
-    "PGT0859": "Eric Atta Quainoo",
-    "PGT0114": "Eric Gonu",
-    "PGT0861": "Eric Magnus Wilmot",
-    "PGT0784": "Ernest Larbi",
-    "PGT0444": "Ernestina Larbie",
-    "PGT0456": "Esmond Naalu Kuuyelleh",
-    "PGT0308": "Eugene Kwarteng Nantwi",
-    "PGT0144": "Evans Frimpong Manso",
-    "PGT0257": "Evelyn Yeboah Nyamah",
-    "PGT0311": "Fatima Iddrisu Abu",
-    "PGT0135": "Felix Kumedzro",
-    "PGT0182": "Felix Kwame Opoku",
-    "PGT0045": "Francis Ansah",
-    "PGT0856": "Francis Arthur",
-    "PGT0156": "Francis O. Boachie Mensah",
-    "PGT0213": "Francis Oppong Twum",
-    "PGT0207": "Francis Taale",
-    "PGT0296": "Francis Tabiri",
-    "PGT0399": "Frederick Ocansey",
-    "PGT0802": "Frederick Ofori Nuako",
-    "PGT0235": "Gabriel Kwesi Aboagye",
-    "PGT0181": "George Oduro Okyire",
-    "PGT0208": "George Tackie",
-    "PGT0469": "George Tweneboah",
-    "PGT0799": "Gertrude Torto",
-    "PGT0464": "Gideon Kwesi Obosu",
-    "PGT0538": "Gloria Essilfie",
-    "PGT0168": "Gloria Nyame",
-    "PGT0590": "Godwin Adolf Idan",
-    "PGT0472": "Helena N. K. Tetteh",
-    "PGT0165": "Hope Pius Nudzor",
-    "PGT0278": "Ibrahim Imoro",
-    "PGT0137": "Innocent Senyo Kwasi Acquah",
-    "PGT0214": "Irene Vanderpuye",
-    "PGT0813": "Isaac Ampah Mensah",
-    "PGT0152": "Isaac Armah Mensah",
-    "PGT0287": "Isaac Atta Kwenin",
-    "PGT0275": "Isaac Benning",
-    "PGT0333": "Isaac Bentum Enning",
-    "PGT0253": "Isaac Christopher Otoo",
-    "PGT0098": "Isaac Dasmani",
-    "PGT0103": "Isaac G Dukuh",
-    "PGT0133": "Isaac Kosi",
-    "PGT0042": "Isaac Kwadwo Anim",
-    "PGT0211": "Isaac Kwao Tetteh",
-    "PGT0580": "Isaac Nunoo",
-    "PGT0157": "Ishmael Mensah",
-    "PGT0828": "Ivy Ama Kpodoe",
-    "PGT0166": "Jacob Nunoo",
-    "PGT0461": "James Amonoo",
-    "PGT0191": "James Atta Peprah",
-    "PGT0131": "Janet Koomson",
-    "PGT0457": "Japhet Osiakwan",
-    "PGT0021": "Joan Ark Agyapong",
-    "PGT0406": "Joana Eva Dodoo",
-    "PGT0800": "John Ekow Laryea",
-    "PGT0113": "John Gatsi",
-    "PGT0380": "John Windie",
-    "PGT0046": "John Windie Ansah",
-    "PGT0136": "Joseph Tuffour Kwarteng",
-    "PGT0836": "Josephine Antenkyi Bentil",
-    "PGT0199": "Joshua Sebu",
-    "PGT0835": "Joy Olive Boye",
-    "PGT0299": "Joyce K. Dankyi",
-    "PGT0270": "Justice Kofi Armah",
-    "PGT0465": "Justina Adams",
-    "PGT0289": "K. Asamoah - Gyimah",
-    "PGT0076": "Kankam Boadu",
-    "PGT0129": "Kassimu Issau",
-    "PGT0195": "Katara Salifu",
-    "PGT0857": "Kennedy Etse Dogbey",
-    "PGT0332": "Kofi Acheaw Owusu",
-    "PGT0097": "Kwabena Nkansah Darfor",
-    "PGT0460": "Kwame Nkrumah",
-    "PGT0090": "Kyeremeh Tawiah Dabone",
-    "PGT0084": "Leticia Bosu",
-    "PGT0416": "Leticia Sam",
-    "PGT0551": "Linda Otoo",
-    "PGT0594": "Lydia A. Dankyi",
-    "PGT0559": "Maame Gyamfuah. Asante Mensah",
-    "PGT0442": "Magdalene Brown",
-    "PGT0826": "Manasseh E.K Amu",
-    "PGT0072": "Marie A. B Bakah",
-    "PGT0555": "Mark Amponsah",
-    "PGT0491": "Mark Bigool",
-    "PGT0057": "Mark Kojo Armah",
-    "PGT0358": "Martha Pearl Okai",
-    "PGT0043": "Martin Anokye",
-    "PGT0187": "Martin Owusu",
-    "PGT0476": "Mary Donkor",
-    "PGT0172": "Maxwell Nyatsikor",
-    "PGT0206": "Maxwell Taabazuing",
-    "PGT0052": "Michael Owusu Appiah",
-    "PGT0845": "Micheal Tutu Boadu",
-    "PGT0854": "Mohammed Abubakar Abdulmoomin",
-    "PGT0404": "Mohammed Alhassan Nurudeen",
-    "PGT0226": "Mohammed Bello Zuberu",
-    "PGT0537": "Monica Ofosu-Koranteng",
-    "PGT0543": "Morris Monkuni Yendu",
-    "PGT0003": "Moses Abnory",
-    "PGT0254": "Moses Segbenya",
-    "PGT0183": "Nana Yaw Oppong",
-    "PGT0188": "Nichodemus Osei Owusu",
-    "PGT0109": "Nick Fobih",
-    "PGT0016": "Ophelia Affreh",
-    "PGT0807": "Osman Light",
-    "PGT0251": "Patrick Darkwah",
-    "PGT0028": "Patrick Kwarshie Akorsu",
-    "PGT0147": "Paul Agyei Mensah",
-    "PGT0024": "Paul Ahiatrogah",
-    "PGT0395": "Paul Arhin Jnr",
-    "PGT0167": "Paul Nyagorme",
-    "PGT0030": "Peace Ametepi",
-    "PGT0428": "Peter Anti Partey",
-    "PGT0077": "Peter Boahin",
-    "PGT0458": "Peter Brown",
-    "PGT0303": "Peterson Owusu Junior",
-    "PGT0422": "Phanuel Wunu",
-    "PGT0329": "Prince Yeboah Asare",
-    "PGT0447": "Raymond K. Elikplim",
-    "PGT0149": "Rebecca Dei Mensah",
-    "PGT0509": "Rebecca Kaedabi Donkor",
-    "PGT0545": "Regina Esi. Turkson",
-    "PGT0146": "Regina Mawusi",
-    "PGT0801": "Rhoda Anyameh Botchway",
-    "PGT0516": "Richard Arthur",
-    "PGT0309": "Richard Lionel Gorni",
-    "PGT0190": "Richmond Panyin",
-    "PGT0121": "Rita Adzovie Holm",
-    "PGT0086": "Ruth Annan Brew",
-    "PGT0053": "Salomey Ofori Appiah",
-    "PGT0248": "Sampson Achina",
-    "PGT0808": "Samuel K. Nkansah",
-    "PGT0023": "Samuel Kwaku Agyei",
-    "PGT0117": "Samuel Tieku Gyansah",
-    "PGT0034": "Samuel Yaw Ampofo",
-    "PGT0130": "Seyram Kawor",
-    "PGT0234": "Stanley K. M. Semarco",
-    "PGT0860": "Stephanie Ekua Frimpong",
-    "PGT0327": "Stephen Antwi Winful",
-    "PGT0099": "Stephen Doh Fia",
-    "PGT0446": "Sylvester Tenkorang",
-    "PGT0093": "T. K. Odame Danso",
-    "PGT0038": "Tahir Ahmed Andzie",
-    "PGT0056": "Valentina Arkorful",
-    "PGT0321": "Vera Arhin",
-    "PGT0040": "Vera Sey Ankomah",
-    "PGT0011": "Vincent Adela",
-    "PGT0577": "Vincent Assanful",
-    "PGT0305": "Vincent Mensah Minadzi",
-    "PGT0462": "William Boateng",
-    "PGT0085": "William Gabriel Brafu- Insaidoo",
-    "PGT0798": "William Godfred Cantah",
-    "PGT0855": "William Osei",
-    "PGT0342": "Williams Osei"
+    "PGT0420": "Dr. Alimatu Saadia Yussiff",
+    "PGT0075": "Dr. Brandford Bervel",
+    "PGT0290": "Dr. Christopher Yarkwah",
+    "PGT0291": "Dr. Daniel Gbormittah",
+    "PGT0029": "Dr. Edward Amarteifio",
+    "PGT0519": "Dr. Elizabeth Darko Agyei",
+    "PGT0262": "Dr. Emmanuel Arthur Nyarko",
+    "PGT0570": "Dr. Emmanuel Dortey",
+    "PGT0275": "Dr. Isaac Benning",
+    "PGT0457": "Dr. Japhet Osiakwan",
+    "PGT0270": "Dr. Justice K. Armah",
+    "PGT0332": "Dr. Kofi Acheaw Owusu",
+    "PGT0545": "Dr. Regina Esi Turkson",
+    "PGT0056": "Dr. Valentina Arkorful",
+    "PGT0855": "Mr. William Osei",
+    "PGT0476": "Ms. Mary Donkor",
+    "PGT0043": "Prof. Martin Anokye",
+    "PGT0167": "Prof. Paul Nyagorme"
 };
 
 // Reverse map: name → ID (for auto-filling ID when name is selected)
@@ -568,148 +426,40 @@ const STAFF_IDS = Object.keys(STAFF_ID_MAP);
 
 // ========== 📋 TUTORS LIST — from Know Your Postgraduate Tutor ID (UCC CoDE) ==========
 const TUTORS_ARRAY = [
-    "Abdul-Jaleel Saani", "Abraham Ansong", "Abraham Gyamfi", "Abraham Yeboah",
-    "Adam Abu", "Alex Adobaw Bansah", "Alex Boadi Dankyi", "Alfred Kuranchie",
-    "Alhassan Karakara", "Alimatu Saadia Yussif", "Amina Jangu Alhassan",
-    "Anastasia Nana Ama Kumi-Korsah", "Andrews Cobbinah", "Anthony Adu - Asare Idun",
-    "Anthony Kwabena Nkyi", "Anthony Owusu", "Augustus Daniel Arko", "Baba Mumuni Yidana",
-    "Bakari Y Dramanu", "Beatrice Somuah", "Benedict Jnr Afful", "Bernard Fentim Dankwa",
-    "Bernard Yaw Acquah", "Brandford Bervell", "Camara Kwesi Obeng", "Carl Hope Korkpoe",
-    "Charles Adabo Oppong", "Charles Asante", "Charles Kwamena Hackman Essel",
-    "Charles Roland Haruna", "Christopher Mensah Adosi", "Christopher Yao Gadese",
-    "Christopher Yarkwah", "Clara Araba Mills", "Collins Annobil", "Comfort A.A Anipa",
-    "Cornelius Adorm - Takyi", "Cosmos Cobbold", "Dacoster Kweku Boakye", "Daisy Ofosuhene",
-    "Daniel Agyapong", "Daniel Gbormittah", "Daniel K. Anhwere", "Daniel Miezah",
-    "Daniel Ofori", "Darlington Adanfo", "Dominic K Owusu", "Dominic Owusu",
-    "Dorcas Pearl. Slippe", "Dorothy Adentwi - Hayford", "Dorothy Amfo Antiri",
-    "Douglas Darko Agyei", "E. O. Agyenim Boateng", "Ebenezer Oppong-Mensah",
-    "Edmond Nyamah Yeboah", "Edmund Kwesi Agormedah", "Edward Akomaning",
-    "Edward Amarteifio", "Edward Marfo Yiadom", "Ekua T. Amua-Sekyi",
-    "Elizabeth Annan Prah", "Elizabeth D. Agyei", "Elliot Kojo Attipoe",
-    "Emmanuel Arthur Nyarko", "Emmanuel Asante", "Emmanuel Asmah", "Emmanuel Attobrah",
-    "Emmanuel Dortey Tetteh", "Emmanuel Ekow Asmah", "Emmanuel Essandoh",
-    "Emmanuel Gyamfi", "Emmanuel Tchouchou", "Emmanuel Y. Tenkorang", "Emmanuel Yaw Arhin",
-    "Eric Amoo Bondzie", "Eric Atta Quainoo", "Eric Gonu", "Eric Magnus Wilmot",
-    "Ernest Larbi", "Ernestina Larbie", "Esmond Naalu Kuuyelleh", "Eugene Kwarteng Nantwi",
-    "Evans Frimpong Manso", "Evelyn Yeboah Nyamah", "Fatima Iddrisu Abu", "Felix Kumedzro",
-    "Felix Kwame Opoku", "Francis Ansah", "Francis Arthur", "Francis O. Boachie Mensah",
-    "Francis Oppong Twum", "Francis Taale", "Francis Tabiri", "Frederick Ocansey",
-    "Frederick Ofori Nuako", "Gabriel Kwesi Aboagye", "George Oduro Okyire", "George Tackie",
-    "George Tweneboah", "Gertrude Torto", "Gideon Kwesi Obosu", "Gloria Essilfie",
-    "Gloria Nyame", "Godwin Adolf Idan", "Helena N. K. Tetteh", "Hope Pius Nudzor",
-    "Ibrahim Imoro", "Innocent Senyo Kwasi Acquah", "Irene Vanderpuye", "Isaac Ampah Mensah",
-    "Isaac Armah Mensah", "Isaac Atta Kwenin", "Isaac Benning", "Isaac Bentum Enning",
-    "Isaac Christopher Otoo", "Isaac Dasmani", "Isaac G Dukuh", "Isaac Kosi",
-    "Isaac Kwadwo Anim", "Isaac Kwao Tetteh", "Isaac Nunoo", "Ishmael Mensah",
-    "Ivy Ama Kpodoe", "Jacob Nunoo", "James Amonoo", "James Atta Peprah", "Janet Koomson",
-    "Japhet Osiakwan", "Joan Ark Agyapong", "Joana Eva Dodoo", "John Ekow Laryea",
-    "John Gatsi", "John Windie", "John Windie Ansah", "Joseph Tuffour Kwarteng",
-    "Josephine Antenkyi Bentil", "Joshua Sebu", "Joy Olive Boye", "Joyce K. Dankyi",
-    "Justice Kofi Armah", "Justina Adams", "K. Asamoah - Gyimah", "Kankam Boadu",
-    "Kassimu Issau", "Katara Salifu", "Kennedy Etse Dogbey", "Kofi Acheaw Owusu",
-    "Kwabena Nkansah Darfor", "Kwame Nkrumah", "Kyeremeh Tawiah Dabone", "Leticia Bosu",
-    "Leticia Sam", "Linda Otoo", "Lydia A. Dankyi", "Maame Gyamfuah. Asante Mensah",
-    "Magdalene Brown", "Manasseh E.K Amu", "Marie A. B Bakah", "Mark Amponsah",
-    "Mark Bigool", "Mark Kojo Armah", "Martha Pearl Okai", "Martin Anokye", "Martin Owusu",
-    "Mary Donkor", "Maxwell Nyatsikor", "Maxwell Taabazuing", "Michael Owusu Appiah",
-    "Micheal Tutu Boadu", "Mohammed Abubakar Abdulmoomin", "Mohammed Alhassan Nurudeen",
-    "Mohammed Bello Zuberu", "Monica Ofosu-Koranteng", "Morris Monkuni Yendu",
-    "Moses Abnory", "Moses Segbenya", "Nana Yaw Oppong", "Nichodemus Osei Owusu",
-    "Nick Fobih", "Ophelia Affreh", "Osman Light", "Patrick Darkwah",
-    "Patrick Kwarshie Akorsu", "Paul Agyei Mensah", "Paul Ahiatrogah", "Paul Arhin Jnr",
-    "Paul Nyagorme", "Peace Ametepi", "Peter Anti Partey", "Peter Boahin", "Peter Brown",
-    "Peterson Owusu Junior", "Phanuel Wunu", "Prince Yeboah Asare", "Raymond K. Elikplim",
-    "Rebecca Dei Mensah", "Rebecca Kaedabi Donkor", "Regina Esi. Turkson", "Regina Mawusi",
-    "Rhoda Anyameh Botchway", "Richard Arthur", "Richard Lionel Gorni", "Richmond Panyin",
-    "Rita Adzovie Holm", "Ruth Annan Brew", "Salomey Ofori Appiah", "Sampson Achina",
-    "Samuel K. Nkansah", "Samuel Kwaku Agyei", "Samuel Tieku Gyansah", "Samuel Yaw Ampofo",
-    "Seyram Kawor", "Stanley K. M. Semarco", "Stephanie Ekua Frimpong",
-    "Stephen Antwi Winful", "Stephen Doh Fia", "Sylvester Tenkorang", "T. K. Odame Danso",
-    "Tahir Ahmed Andzie", "Valentina Arkorful", "Vera Arhin", "Vera Sey Ankomah",
-    "Vincent Adela", "Vincent Assanful", "Vincent Mensah Minadzi", "William Boateng",
-    "William Gabriel Brafu- Insaidoo", "William Godfred Cantah", "William Osei", "Williams Osei"
+    "Dr. Alimatu Saadia Yussiff", "Dr. Brandford Bervel", "Dr. Christopher Yarkwah", "Dr. Daniel Gbormittah",
+    "Dr. Edward Amarteifio", "Dr. Elizabeth Darko Agyei", "Dr. Emmanuel Arthur Nyarko", "Dr. Emmanuel Dortey",
+    "Dr. Isaac Benning", "Dr. Japhet Osiakwan", "Dr. Justice K. Armah", "Dr. Kofi Acheaw Owusu",
+    "Dr. Regina Esi Turkson", "Dr. Valentina Arkorful", "Mr. William Osei", "Ms. Mary Donkor",
+    "Prof. Martin Anokye", "Prof. Paul Nyagorme"
 ];
 const UNIQUE_TUTORS = [...new Set(TUTORS_ARRAY)];
 
 // ========== 📚 COURSES LIST (hardcoded, 150+ courses) ==========
 const ALL_COURSES = [
-    "EMA309D - ASSESSMENT IN MATHEMATICS EDUCATION", "EIT201D - LEARNING THEORIES FOR TEACHING WITH COMPUTER",
-    "ECD101D - DRAWING AND RENDERING 1", "INF109D - MATHEMATICS FOR COMPUTING 1",
-    "EIT101D - FUNDAMENTALS OF OFFICE SUIT IN EDUCATION", "PHY103D - GENERAL PHYSICS 1 (PRACTICAL)",
-    "CHE109D - GENERAL CHEMISTRY (PRACTICAL)", "EIT404D - MULTIMEDIA IN EDUCATION",
-    "INF413D - INFORMATION SYSTEM SECURITY AND MANAGEMENT", "INF411D - PROFESSIONAL COMPUTING",
-    "INF405D - E-COMMERCE 1", "INF403D - MOBILE AND DISTRIBUTED COMPUTING",
-    "INF401D - INTRODUCTING TO MULTIMEDIA COMPUTING", "INF313D - WEB TECHNOLOGY II",
-    "EIT303D - ASSESSMENT IN INFORMATION TECHNOLOGY EDUCATION", "INF315D - DISCRETE MATHEMATICS",
-    "BIO201AD - BASIC SOIL SCIENCE", "ECO103D - PRINCIPLES OF MICROECONOMICS",
-    "CMS107D - COMMUNICATION SKILLS 1", "EDF102D - SOCIAL AND PHILOSOPHICAL FOUNDATIONS OF EDUCATION",
-    "ILT101D - INFORMATION LITERACY", "ASP101D - AFRICAN STUDIES",
-    "ECD105D - LETTERING AND TYPOGRAPHY", "EGA103D - BASIC DESIGN AND COLOUR PSYCHOLOGY",
-    "INF107D - SOFTWARE SUITE", "INF101D - INTRODUCTION TO COMPUTING",
-    "ECO101D - PRINCIPLES OF MICROECONOMICS", "INF105D - INTRODUCTION TO MANAGEMENT",
-    "MAT101D - ALGEBRA AND TRIGONOMETRY", "BIO101D - DIVERSITY OF LIVING ORGANISMS",
-    "PHY101D - GENERAL PHYSICS 1 (THEORY)", "SBU103D - FOUNDATIONS OF ACCOUNTING I",
-    "CHE107D - GENERAL CHEMISTRY (BASIC GENERAL CHEMISTRY)", "EMA212D - PCK IN MATHEMATHEMATICS",
-    "EIT203D - MODALITIES OF TECHNOLOGY FOR TEACHING AND TRAINING", "INF209D - STATISTICAL MODELING",
-    "ECD207D - INDUSTRIAL PRINTING TECHNOLOGY I", "INF219D - OPERATING SYSTEMS",
-    "EIT211D - METHODS OF TEACHING IT", "INF215D - DATABASE MANAGEMENT I",
-    "INF211D - COMPUTER ARCHITECTURE", "ECD201D - INDUSTRIAL PRINTING TECHNOLOGY I",
-    "EIT201D - LEARNING THEORIES FOR TEACHING WITH COMPUTER", "INF217D - PROGRAMING AND PROBLEM ANALYSIS",
-    "EMA208D - METHODS OF TEACHING SHS MATHS", "ECO201D - ELEMENTS OF MICRO ECONOMICS",
-    "EMA202D - ADVANCE ALGEBRA AND CALCULUS", "MAT203D - FURTHER CALCULUS",
-    "EMA201D - NATURE OF MATHEMATICS", "EMA209D - INTRODUCTORY STATICS I",
-    "PHY205D - NEWTONIAN MECHANICS (PRACTICAL)", "BIO204D - MORPHOLOGY AND ANATOMY OF HIGHER PLANTS",
-    "ESC220D - METHODS OF TEACHING PHYSICS", "PHY207D - METHODS OF TEACHING PHYSICS",
-    "PHY203D - INTRODUCTORY ATOMIC PHYSICS, HEAT AND OPTICS", "PHY201D - NEWTONIAN MECHANICS",
-    "EPS212D - SPECIAL EDUCATION", "PHL205D - CRITICAL THINKING AND LOGICAL REASONING",
-    "ESC208D - METHODS OF TEACHING BIOLOGY", "ESC209D - METHODS OF TEACHING CHEMISTRY",
-    "ESC201D - NATURE OF SCIENCE", "CHE207D - PRACTICAL PHYSICAL CHEMISTRY I",
-    "BIO202D - CELL AND TISSUE ORGANIZATION", "CHE203D - PHYSICAL CHEMISTRY I",
-    "CHE201D - MAIN GROUP CHEMISTRY", "EIT304D - INTERNET AND WEB PEDAGOGIES",
-    "INF304D - WEB TECHNOLOGY II", "INF213D - WEB TECHNOLOGY",
-    "PHY303D - THERMAL PHYSICS", "ESC306D - SCIENCE TECHNOLOGY AND SOCIETY",
-    "ESC327D - PCK IN PHYSICS", "ESC312D - PCK IN CHEMISTRY",
-    "ESC316D - PCK IN BIOLOGY", "MBB309D - INTRODUCTION TO MOLECULAR GENETICS",
-    "CHE325D - STEREOCHEMISTRY", "ESC335D - DEVELOPMENT OF SCIENCE TEACHING MATERIALS",
-    "BIO201D - BASIC SOIL SCIENCE", "CHE301D - ANALYTICAL CHEMISTRY",
-    "PHY309D - ATOMIC AND MODERN PHYSICS", "EMA399D - RESEARCH METHODS IN MATH",
-    "EMA335D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS IN MATHS", "STA303D - STATISTICAL METHODS I",
-    "MAT301D - ADVANCED CALCULUS I", "INF305D - NETWORK COMPUTING",
-    "ECD305D - IDENTITY DESIGN AND BRANDING", "INF307D - SOFTWARE ENGINEERING",
-    "EIT302D - DEVELOPMENT OF INSTRUCTIONAL MATERIALS WITH COMPUTERS", "ECO301SD - INTERMEDIATE MICROECONOMICS",
-    "ECD309D - PACKAGING AND ENVIRONMENTAL GRAPHICS", "INF309D - INFORMATION SYSTEMS MANAGEMENT",
-    "ESC311D - ASSESSMENT IN SCIENCE EDUCATION", "ESC309D - ASSESSMENT IN MATHEMATICS",
-    "SOC101D - INTRODUCTION TO SOCIOLOGY I", "SBU101D - FUNDAMENTALS OF BUSINESS I",
-    "RLH101D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
-    "EBS179D - INTRODUCTION TO THE STUDY OF RELIGION AND HUMAN VALUES",
-    "HIS110D - WORLD CIVILIZATIONS UP TO 5TH CENTURY BC", "GHL107TD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (TWI)",
-    "GHL107GAD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (GA)", "GHL107FD - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (MFANTSE)",
-    "GHL107ED - GHANAIAN LANGUAGE USAGE: WRITING TECHNIQUES (EWE)", "GEO103BD - THEMATIC GEOGRAPHY OF GHANA",
-    "GEO101D - ELEMENTS OF PHYSICAL GEOGRAPHY", "EBS161D - SOCIOLOGY OF THE FAMILY",
-    "EBS157D - HUMAN-LAND ISSUES IN SOCIAL STUDIES", "EBS145D - ELEMENTARY GEOMETRY",
-    "EBS133D - THE USE OF ENGLISH", "ENG101D - THE USE OF ENGLISH",
-    "EBS126D - INTRODUCTION TO SOCIAL STUDIES", "EBS125D - PRINCIPLES AND PRACTICE OF EDUCATION",
-    "EBS123D - PHILOSOPHICAL AND PSYCHOLOGICAL FOUNDATIONS OF RME", "EBS121D - STUDIES IN AFRICAN POETRY",
-    "EBS120TD - LINGUISTICS OF THE GHANAIAN LANGUAGE (TWI)", "EBS120GAD - LINGUISTICS OF THE GHANAIAN LANGUAGE (GA)",
-    "EBS120FD - LINGUISTICS OF THE GHANAIAN LANGUAGE (MFANTSE)", "EBS120ED - LINGUISTICS OF THE GHANAIAN LANGUAGE (EWE)",
-    "EBS116TD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (TWI)", "EBS116GAD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (GA)",
-    "EBS116FD - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (MFANTSE)", "EBS116ED - GHANAIAN LANGUAGE AND CULTURE WRITING TECHNIQUES (EWE)",
-    "EBS114D - GENERAL BIOLOGY THEORY I", "EBS112D - FUNDAMENTALS IN HOME ECONOMICS",
-    "EBS109D - FUNDAMENTALS OF IT EDUCATION", "EBS108D - LANGUAGE AND LINGUISTICS",
-    "EBS106D - CHILD DEVELOPMENT AND LEARNING", "EBS105D - CHILD AND ADOLESCENT DEVELOPMENT AND LEARNING",
-    "EBS103D - GENERAL BIOLOGY", "EBS102D - COLLEGE ALGEBRA",
-    "EBS101D - ELEMENTARY ALGEBRA", "EAS106D - THE CORE OF HISTORICAL KNOWLEDGE",
-    "EAS103D - INTRODUCTION TO SECOND LANGUAGE LEARNING & TEACHING", "EAS102D - MORALITY AND SOCIAL VALUES",
-    "BPS121D - BASIC STATISTICS", "BPS113D - PSYCHOLOGY OF HUMAN GROWTH AND DEVELOPMENT",
-    "BPS111D - INTRODUCTION TO GENERAL PSYCHOLOGY", "APS101D - AFRICAN STUDIES"
+    "ESC805SD - Integrated Science", "ESC330SD - Pedagogical Content Knowledge in Biology II",
+    "ESC809S - Ecology and Environmental Science", "MAT806D - Ordinary Differential Equations II",
+    "INF804D - Web Applications and Development", "EIT814D - Educational Statistics",
+    "EMA803D - Curriculum Development in Mathematics Education", "EMA824D - Socio-Cultural & Ethnological Foundations in Mathematics",
+    "EMA843D - Teaching and Assessment in Mathematics Education", "EMA809D - Sampling Techniques and Survey in Mathematics Education",
+    "ESC853SD - Advanced Assessment in Science Education", "EMA838D - Time Series Analysis (Accra/Kumasi only)",
+    "EMA838D - Time Series Analysis (Online Centres Only)", "INF808D - Entrepreneurship",
+    "ESC812SD - Computer Applications in Science Education", "ESC334SD - Pedagogical Content Knowledge in Physics II",
+    "EIT810D - Design of Computer Networks for Education", "EIT816D - Programming Language for Education II",
+    "INF814D - Software Engineering", "INF812D - Management Information Systems",
+    "ESC803SD - Principles & Practice of Curriculum Development in Science Education", "ESC824S - Relativity and Modern Physics",
+    "EMA311D - Implementing Secondary School Mathematics", "INF810D - Internet of Things and Applications",
+    "EMA404D - Vectors and Mechanics", "EIT805D - Instructional Design and Technology",
+    "ESC803SD - Principles of Science Teacher Education and Supervision", "ESC332SD - Pedagogical Content Knowledge in Chemistry II",
+    "ESC822S - Solution Equilibria", "ESC806SD - Topics in Science Education",
+    "EIT811D - Information Technology Project Management", "INF802D - Artificial Intelligence",
+    "EIT804D - Modalities of Technology for Education and Training"
 ];
 const UNIQUE_COURSES = [...new Set(ALL_COURSES)]; 
 
-// ========== B.Ed PROGRAMS ==========
-const BED_PROGRAMS = [
-    "B.Ed Early Childhood", "B.Ed Primary Education", "B.Ed JHS Education",
-    "B.Ed Arts", "B.Ed Maths", "B.Ed Science", "B.Ed IT",
-    "B.Ed Social Studies", "B.Ed Accounting and Management"
+// ========== POSTGRADUATE PROGRAMMES — from the Science Facilitators list ==========
+const PG_PROGRAMS = [
+    "M.Ed (Science Education)", "MEd (Information Technology)",
+    "MEd (Mathematics Education)", "MSc (Information Technology)"
 ];
 
 // ========== SEARCHABLE DROPDOWN FACTORY ==========
@@ -851,18 +601,77 @@ document.addEventListener('DOMContentLoaded', function() {
     populateProgramDropdown();
     setDefaultDate();
     setupFormSubmission(document.getElementById('monitoringForm'));
+    fillMonitorFromLogin();
 
     // Duration calculation
     document.getElementById('startTime').addEventListener('change', calculateDuration);
     document.getElementById('endTime').addEventListener('change', calculateDuration);
 });
 
+// ========== MONITOR IDENTITY ==========
+// With phone-number auth, the Firebase account holds no profile fields
+// (no email, no displayName). Each monitor's Staff ID + name is looked
+// up from the Firestore `monitors` collection by index.html during the
+// SMS flow, then handed to this page via sessionStorage:
+//   sessionStorage.monitorStaffId  -> raw Staff ID e.g. "NSC25/100"
+//   sessionStorage.monitorName     -> display name e.g. "Jane Doe"
+// The MONITOR_MAP below is only a last-ditch fallback for accounts that
+// somehow have no name in Firestore. You do NOT need to maintain it.
+// Keys = real Staff ID, case-insensitive lookup.
+const MONITOR_MAP = {
+    // "NSC25/100": "Jane Doe",   // fallback entries only if ever needed
+};
+
+function fillMonitorFromLogin() {
+    const field = document.getElementById('monitor');
+    const hint = document.getElementById('monitorHint');
+    if (!field) return;
+
+    const rawId = (sessionStorage.getItem('monitorStaffId') || '').trim();
+    const fbName = (sessionStorage.getItem('monitorName') || '').trim();
+
+    // 1. Preferred: name set by index.html from Firestore.
+    if (fbName) {
+        field.value = fbName;
+        hint.textContent = rawId ? ('Signed in as ' + rawId) : 'Signed in';
+        return;
+    }
+
+    // 2. Fallback: in-code map (case-insensitive).
+    if (rawId) {
+        let name = MONITOR_MAP[rawId];
+        if (!name) {
+            const upper = rawId.toUpperCase();
+            const key = Object.keys(MONITOR_MAP)
+                .find(k => k.toUpperCase() === upper);
+            if (key) name = MONITOR_MAP[key];
+        }
+        if (name) {
+            field.value = name;
+            hint.textContent = 'Signed in as ' + rawId;
+            return;
+        }
+        // 3. Last resort: record the ID itself so it's never blank.
+        field.value = rawId;
+        hint.textContent = 'No name set for ' + rawId +
+            ' — recording the Staff ID. Ask the administrator to ' +
+            'set your name on your account.';
+        return;
+    }
+
+    // No identity at all (shouldn't happen behind the auth guard).
+    field.value = '';
+    hint.textContent = 'Could not detect your login. Please sign in again.';
+}
+window.fillMonitorFromLogin = fillMonitorFromLogin;
+
+
 // ========== POPULATE PROGRAM DROPDOWN ==========
 function populateProgramDropdown() {
     const prog = document.getElementById('program');
     if (!prog) return;
-    prog.innerHTML = '<option value="" disabled selected>Select program</option>';
-    BED_PROGRAMS.forEach(p => {
+    prog.innerHTML = '<option value="" disabled selected>Select programme</option>';
+    PG_PROGRAMS.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p; opt.textContent = p; prog.appendChild(opt);
     });
@@ -912,7 +721,12 @@ function calculateDuration() {
 }
 
 // ========== FORM SUBMISSION & VALIDATION ==========
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysRahT2AwO6HqWl-oz7gzAHqeHMR7bN-koFQjvfDy-Dv9NpkUOOKAyoBU4bhtxVxqP/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh4BdCwKa9lNscSXt0JESw3qzXWxc5a5McY1MeJyIT9qrBEcVc_9CgsSVZzUTB0Oz7/exec';
+
+// Must EXACTLY match the FORM_SECRET script property in Code.gs.
+// NOTE: this is visible in page source — it stops casual abuse, not a
+// determined attacker. Real auth is a separate step.
+const FORM_TOKEN = 'CHANGE_ME_to_match_FORM_SECRET';
 
 function setupFormSubmission(form) {
     form.addEventListener('submit', async function(e) {
@@ -954,7 +768,8 @@ function validateForm() {
 function prepareFormData() {
     const data = {};
     new FormData(document.getElementById('monitoringForm')).forEach((v,k) => data[k]=v);
-    data.formType = 'Undergraduate';
+    data.formType = 'Postgraduate';
+    data.token = FORM_TOKEN;
 
     // Radio buttons — must be captured explicitly as FormData misses unchecked ones
     const cl = document.querySelector('input[name="classLevel"]:checked');
@@ -984,9 +799,30 @@ async function submitFormData(data) {
 
     try {
         const body = new URLSearchParams(data);
-        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body.toString() });
-        showSuccessMessage();
-        setTimeout(() => resetForm(), 2000);
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        });
+
+        if (!response.ok) {
+            throw new Error('Server returned HTTP ' + response.status);
+        }
+
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseErr) {
+            throw new Error('Could not read server response. Check the script deployment.');
+        }
+
+        if (result && result.success) {
+            showSuccessMessage();
+            setTimeout(() => resetForm(), 2000);
+        } else {
+            const reason = (result && (result.error || result.message)) || 'Unknown error';
+            showErrorMessage(reason);
+        }
     } catch (e) {
         showErrorMessage(e.message);
     } finally {
@@ -1019,6 +855,10 @@ function resetForm() {
     document.getElementById('lecturer').value = '';
     document.getElementById('courseSearchInput').value = '';
     document.getElementById('course').value = '';
+
+    // form.reset() blanks the read-only monitor field — restore it so the
+    // same monitor's next entry stays correctly attributed.
+    fillMonitorFromLogin();
 
     hideMessages();
 }

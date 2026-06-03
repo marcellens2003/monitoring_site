@@ -4,139 +4,64 @@
     <meta charset="UTF-8">
     <title>Monitor's Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            height: 100vh;
-            font-family: Arial, sans-serif;
+            margin: 0; min-height: 100vh; font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
         }
-
         .login-container {
-            width: 100%;
-            max-width: 420px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
+            width: 100%; max-width: 440px; background: #ffffff;
+            padding: 30px; border-radius: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
-
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 25px;
         }
+        .header h2 { margin: 0; color: #333; flex-grow: 1; text-align: center; font-size: 20px; }
+        .logo { flex-shrink: 0; }
 
-        .header h2 {
-            margin: 0;
-            color: #333;
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        .logo {
-            flex-shrink: 0;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
+        .form-group { margin-bottom: 18px; }
         .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #444;
+            display: block; margin-bottom: 6px; font-weight: bold; color: #444;
         }
-
         .form-group input {
-            width: 100%;
-            padding: 12px;
-            font-size: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            outline: none;
+            width: 100%; padding: 12px; font-size: 15px;
+            border: 1px solid #ccc; border-radius: 6px; outline: none;
             transition: border 0.3s;
         }
+        .form-group input:focus { border-color: #007bff; }
+        .hint { font-size: 12px; color: #666; margin-top: 4px; }
 
-        .form-group input:focus {
-            border-color: #007bff;
+        .primary-btn {
+            width: 100%; padding: 12px; border: none;
+            border-radius: 6px; font-size: 16px; font-weight: bold;
+            cursor: pointer; margin-top: 10px; transition: background 0.3s;
+            background: #007bff; color: #fff;
         }
-
-        .hint {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #007bff;
-            border: none;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-
-        .login-btn:hover {
-            background: #0056b3;
-        }
+        .primary-btn:hover { background: #0056b3; }
+        .primary-btn:disabled { background: #9ec5e8; cursor: not-allowed; }
 
         .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-            text-align: center;
-            padding: 8px;
-            background-color: #f8d7da;
-            border-radius: 4px;
-            border: 1px solid #f5c6cb;
+            color: #721c24; font-size: 14px; margin-top: 5px; display: none;
+            text-align: center; padding: 8px; background-color: #f8d7da;
+            border-radius: 4px; border: 1px solid #f5c6cb;
         }
-
         .success-message {
-            color: #28a745;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-            text-align: center;
-            padding: 8px;
-            background-color: #d4edda;
-            border-radius: 4px;
-            border: 1px solid #c3e6cb;
+            color: #155724; font-size: 14px; margin-top: 5px; display: none;
+            text-align: center; padding: 8px; background-color: #d4edda;
+            border-radius: 4px; border: 1px solid #c3e6cb;
         }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-        }
-
+        .loading { display: none; text-align: center; margin-top: 10px; }
         .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            border: 3px solid #f3f3f3; border-top: 3px solid #007bff;
+            border-radius: 50%; width: 20px; height: 20px;
             animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
+            display: inline-block; vertical-align: middle;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -147,104 +72,177 @@
 
 <div class="login-container">
     <div class="header">
-        <img src="CoDE LOGO PNG.png" height="80" width="80" class="logo">
+        <img src="CoDE LOGO PNG.png" height="60" width="60" class="logo"
+             onerror="this.src='https://via.placeholder.com/60/002147/FFFFFF?text=CoDE'">
         <h2>Monitors Login</h2>
-        <img src="UCC LOGO PNG.png" height="80" width="80" class="logo">
+        <img src="UCC LOGO PNG.png" height="60" width="60" class="logo"
+             onerror="this.src='https://via.placeholder.com/60/0056b3/FFFFFF?text=UCC'">
     </div>
 
-    <form id="loginForm">
-        <div class="form-group">
-            <label for="staffId">Staff ID</label>
-            <input type="text" id="staffId" name="staffId" placeholder="Enter Staff ID" required>
-        </div>
+    <div class="form-group">
+        <label for="staffId">Staff ID</label>
+        <input type="text" id="staffId" placeholder="e.g. NSC25/100"
+               autocomplete="username" autocapitalize="off" spellcheck="false">
+        <div class="hint">Enter the Staff ID provided by your administrator.</div>
+    </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password"
-                   id="password"
-                   name="password"
-                   placeholder="Digits only"
-                   pattern="[0-9]+"
-                   title="Password must contain digits only"
-                   required>
-            <div class="hint">Password must be a unique string of digits.</div>
-        </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Your password"
+               autocomplete="current-password">
+    </div>
 
-        <div id="errorMessage" class="error-message"></div>
-        <div id="successMessage" class="success-message">Login successful! Redirecting...</div>
-        
-        <div class="loading" id="loading">
-            <div class="loading-spinner"></div>
-            <span style="margin-left: 8px;">Verifying...</span>
-        </div>
+    <div id="loginError" class="error-message"></div>
+    <div id="loginSuccess" class="success-message">Signed in! Redirecting...</div>
+    <div id="loginLoading" class="loading">
+        <div class="loading-spinner"></div>
+        <span style="margin-left: 8px;">Signing in...</span>
+    </div>
 
-        <button type="submit" class="login-btn" id="loginBtn">Login</button>
-       
-    </form>
+    <button type="button" class="primary-btn" id="loginBtn">Sign in</button>
 </div>
 
-<script>
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form from submitting normally
-        
-        // Get input values
-        const staffId = document.getElementById('staffId').value.trim();
-        const password = document.getElementById('password').value;
-        
-        // Get message elements
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        const loading = document.getElementById('loading');
-        const loginBtn = document.getElementById('loginBtn');
-        
-        // Hide any previous messages
-        errorMessage.style.display = 'none';
-        successMessage.style.display = 'none';
-        
-        // Show loading spinner
-        loading.style.display = 'block';
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Logging in...';
-        
-        // Simulate network delay (remove this in production)
-        setTimeout(function() {
-            // Validate credentials
-            if (staffId === 'NSC25/100' && password === '1234567890') {
-                // Show success message
-                successMessage.style.display = 'block';
-                errorMessage.style.display = 'none';
-                
-                // Redirect to another page after 1.5 seconds
-                setTimeout(function() {
-                    // Change this URL to your actual destination page
-                    window.location.href = 'undergrad.html'; // or 'welcome.html', 'home.html', etc.
-                }, 1500);
-            } else {
-                // Show error message
-                errorMessage.textContent = 'Invalid Staff ID or Password. Please try again.';
-                errorMessage.style.display = 'block';
-                successMessage.style.display = 'none';
-                
-                // Reset form
-                document.getElementById('password').value = '';
-                
-                // Enable button again
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Login';
-            }
-            
-            // Hide loading spinner
-            loading.style.display = 'none';
-        }, 1000); // 1 second delay to simulate processing
+<script type="module">
+    import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import {
+        getAuth, signInWithEmailAndPassword,
+        onAuthStateChanged, setPersistence, browserSessionPersistence
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import {
+        getFirestore, doc, getDoc
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    // ====== FIREBASE CONFIG (same as before) ======
+    const firebaseConfig = {
+        apiKey: "AIzaSyCzgOGc51Qr6DXnJ-zkczBtGniYNLf0jOw",
+        authDomain: "monitoringucc.firebaseapp.com",
+        projectId: "monitoringucc",
+        storageBucket: "monitoringucc.firebasestorage.app",
+        messagingSenderId: "210063574932",
+        appId: "1:210063574932:web:8ccd563312321dcd2af181"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Session-only persistence: closing the browser logs the monitor out.
+    setPersistence(auth, browserSessionPersistence);
+
+    // ====== HELPERS ======
+
+    // Firestore document IDs can't contain '/', so we slugify Staff IDs
+    // the same way every time. NSC25/100 -> NSC25-100
+    function staffIdToDocId(staffId) {
+        return staffId.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '-')
+                             .replace(/^-+|-+$/g, '');
+    }
+
+    // Firebase needs an email-shaped login, so each Staff ID maps to a
+    // synthetic address. MUST stay identical to staffIdToEmail() in
+    // staff-id-converter.html — if you change one, change both.
+    const DOMAIN = 'monitors.ucc.local';
+    function staffIdToEmail(s) {
+        const slug = s.trim().toLowerCase()
+                       .replace(/[^a-z0-9]+/g, '-')
+                       .replace(/^-+|-+$/g, '');
+        return slug + '@' + DOMAIN;
+    }
+
+    // ====== ALREADY-SIGNED-IN GUARD ======
+    onAuthStateChanged(auth, (user) => {
+        if (user && sessionStorage.getItem('monitorStaffId')) {
+            window.location.href = 'undergrad.html';
+        }
     });
 
-    // Clear error message when user starts typing
-    document.getElementById('staffId').addEventListener('input', function() {
-        document.getElementById('errorMessage').style.display = 'none';
+    // ====== UI HELPERS ======
+    function showError(message) {
+        const el = document.getElementById('loginError');
+        el.textContent = message;
+        el.style.display = 'block';
+    }
+    function clearMessages() {
+        document.getElementById('loginError').style.display = 'none';
+        document.getElementById('loginSuccess').style.display = 'none';
+    }
+    function setLoading(isLoading) {
+        document.getElementById('loginLoading').style.display =
+            isLoading ? 'block' : 'none';
+        document.getElementById('loginBtn').disabled = isLoading;
+    }
+
+    // ====== LOGIN ======
+    async function doLogin() {
+        clearMessages();
+        const rawStaffId = document.getElementById('staffId').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!rawStaffId) { showError('Please enter your Staff ID.'); return; }
+        if (!password)   { showError('Please enter your password.'); return; }
+
+        setLoading(true);
+        try {
+            // 1) Sign in with the synthetic email + password.
+            const email = staffIdToEmail(rawStaffId);
+            await signInWithEmailAndPassword(auth, email, password);
+
+            // 2) Look up the monitor record for name + active check.
+            let name = rawStaffId;
+            let staffId = rawStaffId;
+            try {
+                const docId = staffIdToDocId(rawStaffId);
+                const snap = await getDoc(doc(db, 'monitors', docId));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.active === false) {
+                        await auth.signOut();
+                        showError('This account has been deactivated. Contact your administrator.');
+                        setLoading(false);
+                        return;
+                    }
+                    name = data.name || rawStaffId;
+                    staffId = data.staffId || rawStaffId;
+                }
+            } catch (lookupErr) {
+                // Non-fatal: auth succeeded. Fall back to the raw Staff ID.
+                console.warn('Monitor record lookup failed:', lookupErr);
+            }
+
+            // 3) Persist identity so undergrad.html can read it.
+            sessionStorage.setItem('monitorStaffId', staffId);
+            sessionStorage.setItem('monitorName', name);
+
+            setLoading(false);
+            document.getElementById('loginSuccess').style.display = 'block';
+            setTimeout(() => { window.location.href = 'undergrad.html'; }, 800);
+        } catch (e) {
+            console.error(e);
+            let msg = 'Could not sign in. Please try again.';
+            if (e.code === 'auth/invalid-credential' ||
+                e.code === 'auth/wrong-password' ||
+                e.code === 'auth/user-not-found' ||
+                e.code === 'auth/invalid-email') {
+                msg = 'Incorrect Staff ID or password. Please try again, or contact your administrator.';
+            } else if (e.code === 'auth/too-many-requests') {
+                msg = 'Too many attempts. Please wait a while and try again.';
+            } else if (e.code === 'auth/network-request-failed') {
+                msg = 'Could not reach the server. Check your connection and try again.';
+            } else if (e.code === 'auth/user-disabled') {
+                msg = 'This account has been disabled. Contact your administrator.';
+            }
+            showError(msg);
+            setLoading(false);
+        }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', doLogin);
+    document.getElementById('staffId').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('password').focus();
     });
-    
-    document.getElementById('password').addEventListener('input', function() {
-        document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('password').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') doLogin();
     });
 </script>
 
