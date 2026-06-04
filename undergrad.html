@@ -9,37 +9,116 @@
         * { box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
-            background: #f2f4f7;
+            background: #0a1f5c;
             padding: 20px;
-            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            background-blend-mode: overlay; background-color: rgba(255,255,255,0.9);
             min-height: 100vh;
+            position: relative;
         }
+        /* Blurred campus background on its own fixed layer so the blur
+           never touches the page content. */
+        /* Marbled paint background — UCC colours. Local file in same folder,
+           so it always loads (no external hotlink to break). */
         body::before {
-            content: ''; position: fixed; top:0; left:0; right:0; bottom:0;
-            background: rgba(255,255,255,0.85); z-index: -1;
+            content: ''; position: fixed; inset: 0; z-index: -2;
+            background-image: url("campus-bg.jpg");
+            background-size: cover; background-position: center;
+            filter: blur(5px) saturate(1.05);
+            transform: scale(1.06); /* hides blurred edges */
+        }
+        /* Light wash so the marbled colours show through but text stays readable. */
+        body::after {
+            content: ''; position: fixed; inset: 0; z-index: -1;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.10), rgba(10,31,92,0.22));
         }
 
+        /* ===== UCC-themed banner =====
+           Palette from UCC's official colours: Cosmic Cobalt (deep blue),
+           Aureolin (gold), Vermilion (red), on white. The gold rule and the
+           red seam echo the coat of arms (golden eagle, red Adinkra). */
         .header {
+            position: relative; overflow: hidden;
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 30px; padding: 20px 30px;
-            background: linear-gradient(135deg, #002147, #0056b3);
-            color: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            min-height: 140px;
+            margin-bottom: 30px; padding: 24px 34px;
+            background:
+                radial-gradient(80% 120% at 88% -10%, rgba(255,211,77,0.18), rgba(255,211,77,0) 55%),
+                radial-gradient(120% 140% at 0% 0%, rgba(255,255,255,0.14), rgba(255,255,255,0) 48%),
+                linear-gradient(135deg, #08183f 0%, #102a72 42%, #1d3a8f 78%, #244aa6 100%);
+            color: #ffffff; border-radius: 16px;
+            box-shadow:
+                0 14px 36px rgba(8,24,63,0.45),
+                inset 0 0 0 1px rgba(255,211,77,0.22),
+                inset 0 1px 0 rgba(255,255,255,0.18);
+            min-height: 150px;
         }
-        .logo-container { flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+        /* diagonal glass sheen sweeping across the banner */
+        .header::before {
+            content: ""; position: absolute; top:0; bottom:0; left:-60%; width:55%;
+            background: linear-gradient(105deg,
+                rgba(255,255,255,0) 0%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-18deg);
+            animation: sheen 6.5s ease-in-out infinite;
+        }
+        @keyframes sheen {
+            0%, 18% { left: -60%; }
+            55%, 100% { left: 130%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .header::before { animation: none; left: -60%; }
+        }
+        /* gold + red decorative seam along the bottom */
+        .header::after {
+            content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
+            background: linear-gradient(90deg,
+                #d4362a 0%, #d4362a 18%, #e8b500 18%, #ffd34d 50%, #e8b500 82%, #d4362a 82%, #d4362a 100%);
+        }
+        /* top gold hairline */
+        .header > .top-rule {
+            position: absolute; left: 0; right: 0; top: 0; height: 4px;
+            background: linear-gradient(90deg, #e8b500 0%, #ffd34d 50%, #e8b500 100%);
+            z-index: 2;
+        }
+        .logo-container {
+            flex:0 0 auto; position: relative; z-index: 1;
+            display:flex; align-items:center; justify-content:center;
+            background: none; border: none; padding: 0; box-shadow: none;
+        }
         .logo-left { margin-right:auto; }
         .logo-right { margin-left:auto; }
-        .header-logo { height:100px; width:100px; object-fit:contain; border-radius:8px; padding:5px; }
-        .header-center { flex:1; text-align:center; padding:0 30px; min-width:300px; }
-        .header-center h1 { margin:0; font-size:28px; font-weight:bold; letter-spacing:1px; line-height:1.2; }
-        .header-center .subtitle { margin:8px 0 0; font-size:20px; opacity:0.95; font-weight:500; }
+        .header-logo {
+            height:96px; width:96px; object-fit:contain; display:block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.45));
+        }
+        .header-center { flex:1; text-align:center; padding:0 28px; min-width:300px; position: relative; z-index: 1; }
+        .header-center h1 {
+            margin:0; font-size:28px; font-weight:800; letter-spacing:1.6px;
+            line-height:1.2; text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+        }
+        /* gold gradient text shine on the title */
+        .header-center h1 .shine {
+            background: linear-gradient(180deg, #ffffff 0%, #fff4cf 55%, #ffd86b 100%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: #ffd86b;
+        }
+        /* gold accent under the title, centred */
+        .header-center h1::after {
+            content: ""; display:block; width:88px; height:3px; margin:11px auto 0;
+            background: linear-gradient(90deg, rgba(232,181,0,0), #ffd34d, rgba(232,181,0,0));
+            border-radius:3px;
+        }
+        .header-center .subtitle {
+            margin:11px 0 0; font-size:16px; font-weight:600;
+            letter-spacing:1.2px; text-transform: uppercase; color:#ffe08a;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
 
         .container {
-            max-width: 700px; margin: auto; background: #ffffff;
-            padding: 25px 30px; border-radius: 10px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.15); border:1px solid rgba(0,123,255,0.1);
+            max-width: 700px; margin: auto;
+            background: rgba(255,255,255,0.97);
+            padding: 25px 30px; border-radius: 14px;
+            box-shadow: 0 18px 50px rgba(5,16,48,0.45);
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(2px);
         }
         h2 { text-align:center; margin-bottom:25px; color:#002147; border-bottom:2px solid #0056b3; padding-bottom:10px; }
 
@@ -202,12 +281,12 @@
 
         @media (max-width: 768px) {
             body { padding:10px; background-attachment:scroll; }
-            .header { flex-direction:column; padding:15px; min-height:auto; }
-            .logo-container { margin:10px 0; }
-            .header-logo { height:80px; width:80px; }
-            .header-center { padding:0 15px; min-width:auto; }
-            .header-center h1 { font-size:24px; }
-            .header-center .subtitle { font-size:18px; }
+            .header { flex-direction:column; padding:18px 16px; min-height:auto; }
+            .logo-container { margin:8px 0; }
+            .header-logo { height:74px; width:74px; }
+            .header-center { padding:6px 12px 0; min-width:auto; }
+            .header-center h1 { font-size:21px; letter-spacing:1px; }
+            .header-center .subtitle { font-size:15px; }
             .container { padding:20px; }
         }
     </style>
@@ -281,13 +360,14 @@
 </div>
 
 <div class="header">
+    <span class="top-rule"></span>
     <div class="logo-container logo-left">
         <img src="CoDE LOGO PNG.png" alt="CoDE Logo" class="header-logo"
              onerror="this.src='https://via.placeholder.com/100/002147/FFFFFF?text=CoDE'">
     </div>
     <div class="header-center">
-        <h1>UNIVERSITY OF CAPE COAST (UCC)</h1>
-        <div class="subtitle">COLLEGE OF DISTANCE EDUCATION (CoDE)</div>
+        <h1>UNIVERSITY OF CAPE COAST <span class="shine">(UCC)</span></h1>
+        <div class="subtitle">College of Distance Education (CoDE)</div>
     </div>
     <div class="logo-container logo-right">
         <img src="UCC LOGO PNG.png" alt="UCC Logo" class="header-logo"

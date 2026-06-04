@@ -8,21 +8,66 @@
         * { box-sizing: border-box; }
         body {
             margin: 0; min-height: 100vh; font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+            background: #0a1f5c;
             display: flex; align-items: center; justify-content: center;
-            padding: 20px;
+            padding: 20px; position: relative;
+        }
+        /* Marbled paint background — UCC colours. Local file in same folder. */
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: -2;
+            background-image: url("campus-bg.jpg");
+            background-size: cover; background-position: center;
+            filter: blur(5px) saturate(1.05);
+            transform: scale(1.06);
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0; z-index: -1;
+            background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(10,31,92,0.22));
         }
         .login-container {
-            width: 100%; max-width: 440px; background: #ffffff;
-            padding: 30px; border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 100%; max-width: 440px;
+            background: rgba(255,255,255,0.97);
+            padding: 30px; border-radius: 14px;
+            box-shadow: 0 18px 50px rgba(5,16,48,0.45);
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(2px);
+            position: relative; z-index: 1;
         }
+
+        /* ===== Compact UCC banner (matches monitoring page) ===== */
         .header {
+            position: relative; overflow: hidden;
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 25px;
+            gap: 12px; margin: -30px -30px 24px; padding: 18px 22px;
+            background:
+                radial-gradient(80% 120% at 90% -20%, rgba(255,211,77,0.20), rgba(255,211,77,0) 55%),
+                linear-gradient(135deg, #08183f 0%, #102a72 45%, #1d3a8f 82%, #244aa6 100%);
+            border-radius: 14px 14px 0 0;
+            box-shadow: inset 0 0 0 1px rgba(255,211,77,0.22), inset 0 1px 0 rgba(255,255,255,0.18);
         }
-        .header h2 { margin: 0; color: #333; flex-grow: 1; text-align: center; font-size: 20px; }
-        .logo { flex-shrink: 0; }
+        .header::before {
+            content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px;
+            background: linear-gradient(90deg, #e8b500 0%, #ffd34d 50%, #e8b500 100%);
+        }
+        .header::after {
+            content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+            background: linear-gradient(90deg,
+                #d4362a 0%, #d4362a 18%, #e8b500 18%, #ffd34d 50%, #e8b500 82%, #d4362a 82%, #d4362a 100%);
+        }
+        .header h2 {
+            margin: 0; flex-grow: 1; text-align: center; font-size: 19px;
+            font-weight: 800; letter-spacing: 0.8px; color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+        }
+        .header h2::after {
+            content: ""; display:block; width:60px; height:3px; margin:7px auto 0;
+            background: linear-gradient(90deg, rgba(232,181,0,0), #ffd34d, rgba(232,181,0,0));
+            border-radius:3px;
+        }
+        .logo {
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.45));
+        }
 
         .form-group { margin-bottom: 18px; }
         .form-group label {
@@ -33,16 +78,16 @@
             border: 1px solid #ccc; border-radius: 6px; outline: none;
             transition: border 0.3s;
         }
-        .form-group input:focus { border-color: #007bff; }
+        .form-group input:focus { border-color: #1d3a8f; }
         .hint { font-size: 12px; color: #666; margin-top: 4px; }
 
         .primary-btn {
             width: 100%; padding: 12px; border: none;
             border-radius: 6px; font-size: 16px; font-weight: bold;
             cursor: pointer; margin-top: 10px; transition: background 0.3s;
-            background: #007bff; color: #fff;
+            background: linear-gradient(135deg, #102a72, #1d3a8f); color: #fff;
         }
-        .primary-btn:hover { background: #0056b3; }
+        .primary-btn:hover { background: linear-gradient(135deg, #0a1f5c, #14307f); }
         .primary-btn:disabled { background: #9ec5e8; cursor: not-allowed; }
 
         .error-message {
@@ -57,7 +102,7 @@
         }
         .loading { display: none; text-align: center; margin-top: 10px; }
         .loading-spinner {
-            border: 3px solid #f3f3f3; border-top: 3px solid #007bff;
+            border: 3px solid #f3f3f3; border-top: 3px solid #1d3a8f;
             border-radius: 50%; width: 20px; height: 20px;
             animation: spin 1s linear infinite;
             display: inline-block; vertical-align: middle;
@@ -141,7 +186,7 @@
 
     // Firebase needs an email-shaped login, so each Staff ID maps to a
     // synthetic address. MUST stay identical to staffIdToEmail() in
-    // staff-id-converter.html — if you change one, change both.
+    // staff-id-converter.html and monitor-admin.html.
     const DOMAIN = 'monitors.ucc.local';
     function staffIdToEmail(s) {
         const slug = s.trim().toLowerCase()
