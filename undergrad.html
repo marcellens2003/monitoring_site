@@ -13,7 +13,7 @@
         }
         /* Long unbreakable words (e.g. long course/lecturer names, emails)
            wrap instead of forcing the layout wider than the screen. */
-        h1, h2, p, label, .field-label, .option-item, .searchable-input,
+        h1, h2, p, .field-label, .option-item, .searchable-input,
         .mode-text, .duration-display {
             overflow-wrap: break-word;
             word-break: break-word;
@@ -214,15 +214,13 @@
 
         .radio-container {
             margin-top:8px; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e9ecef;
-            display:flex; flex-wrap:wrap; gap:10px;
         }
         .radio-container label {
             display:inline-flex; align-items:center; gap:8px; font-weight:normal;
-            cursor:pointer; padding:9px 14px; border-radius:6px; transition:background 0.2s;
-            border:1px solid #e3e8ee; background:#fff; white-space:nowrap;
+            cursor:pointer; margin-bottom:8px; padding:5px 10px; border-radius:4px; transition:background 0.2s;
         }
         .radio-container label:hover { background:#e9ecef; }
-        .radio-container input[type="radio"] { margin:0; transform:scale(1.1); flex-shrink:0; }
+        .radio-container input[type="radio"] { margin:0; transform:scale(1.1); }
 
         /* Duration display */
         .duration-display {
@@ -469,11 +467,11 @@
 
         <div class="field-label">CLASS LEVEL *</div>
         <div class="radio-container">
-            <label><input type="radio" name="classLevel" value="100" required> Level 100</label>
-            <label><input type="radio" name="classLevel" value="200"> Level 200</label>
-            <label><input type="radio" name="classLevel" value="300"> Level 300</label>
-            <label><input type="radio" name="classLevel" value="400"> Level 400</label>
-            <label><input type="radio" name="classLevel" value="500"> Level 500</label>
+            <label><input type="radio" name="classLevel" value="100" required> Level 100</label><br>
+            <label><input type="radio" name="classLevel" value="200"> Level 200</label><br>
+            <label><input type="radio" name="classLevel" value="300"> Level 300</label><br>
+            <label><input type="radio" name="classLevel" value="400"> Level 400</label><br>
+            <label><input type="radio" name="classLevel" value="500"> Level 500</label><br>
             <label><input type="radio" name="classLevel" value="800"> Level 800</label>
         </div>
 
@@ -497,8 +495,8 @@
 
         <div class="field-label">ATTENDANCE STATUS *</div>
         <div class="radio-container">
-            <label><input type="radio" name="attendance" value="Present" required> Present</label>
-            <label><input type="radio" name="attendance" value="Absent"> Absent</label>
+            <label><input type="radio" name="attendance" value="Present" required> Present</label><br>
+            <label><input type="radio" name="attendance" value="Absent"> Absent</label><br>
             <label><input type="radio" name="attendance" value="Late"> Late</label>
         </div>
 
