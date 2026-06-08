@@ -7,6 +7,18 @@
 
     <style>
         * { box-sizing: border-box; }
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;   /* hard guard against sideways scrolling */
+        }
+        /* Long unbreakable words (e.g. long course/lecturer names, emails)
+           wrap instead of forcing the layout wider than the screen. */
+        h1, h2, p, label, .field-label, .option-item, .searchable-input,
+        .mode-text, .duration-display, .radio-container label {
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        img { max-width: 100%; }
         body {
             font-family: Arial, sans-serif;
             background: #0a1f5c;
@@ -17,13 +29,13 @@
         /* Blurred campus background on its own fixed layer so the blur
            never touches the page content. */
         /* Marbled paint background — UCC colours. Local file in same folder,
-           so it always loads (no external hotlink to break). */
+           so it always loads (no external hotlink to break).
+           Base uses a PRE-BLURRED image so phones do zero runtime blur work. */
         body::before {
             content: ''; position: fixed; inset: 0; z-index: -2;
-            background-image: url("campus-bg.jpg");
+            background-image: url("campus-bg-blur.jpg");
             background-size: cover; background-position: center;
-            filter: blur(5px) saturate(1.05);
-            transform: scale(1.06); /* hides blurred edges */
+            transform: scale(1.04); /* hides any edge softness */
         }
         /* Light wash so the marbled colours show through but text stays readable. */
         body::after {
@@ -51,20 +63,20 @@
                 inset 0 1px 0 rgba(255,255,255,0.18);
             min-height: 150px;
         }
-        /* diagonal glass sheen sweeping across the banner */
+        /* diagonal glass sheen across the banner (animated on desktop only) */
         .header::before {
             content: ""; position: absolute; top:0; bottom:0; left:-60%; width:55%;
             background: linear-gradient(105deg,
                 rgba(255,255,255,0) 0%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0) 100%);
             transform: skewX(-18deg);
-            animation: sheen 6.5s ease-in-out infinite;
         }
         @keyframes sheen {
             0%, 18% { left: -60%; }
             55%, 100% { left: 130%; }
         }
-        @media (prefers-reduced-motion: reduce) {
-            .header::before { animation: none; left: -60%; }
+        /* Only run the continuous animation on devices that can afford it. */
+        @media (min-width: 769px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+            .header::before { animation: sheen 6.5s ease-in-out infinite; }
         }
         /* gold + red decorative seam along the bottom */
         .header::after {
@@ -114,11 +126,17 @@
 
         .container {
             max-width: 700px; margin: auto;
-            background: rgba(255,255,255,0.97);
+            background: rgba(255,255,255,0.98);
             padding: 25px 30px; border-radius: 14px;
             box-shadow: 0 18px 50px rgba(5,16,48,0.45);
             border: 1px solid rgba(255,255,255,0.6);
-            backdrop-filter: blur(2px);
+        }
+
+        /* ===== Desktop-only visual enhancements =====
+           Phones skip these entirely, which is what keeps mobile smooth:
+           no live blur, no backdrop-filter, no animated sheen. */
+        @media (min-width: 769px) and (hover: hover) {
+            .container { background: rgba(255,255,255,0.97); backdrop-filter: blur(2px); }
         }
         h2 { text-align:center; margin-bottom:25px; color:#002147; border-bottom:2px solid #0056b3; padding-bottom:10px; }
 
@@ -280,14 +298,28 @@
         .success-message { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
 
         @media (max-width: 768px) {
-            body { padding:10px; background-attachment:scroll; }
-            .header { flex-direction:column; padding:18px 16px; min-height:auto; }
-            .logo-container { margin:8px 0; }
-            .header-logo { height:74px; width:74px; }
-            .header-center { padding:6px 12px 0; min-width:auto; }
-            .header-center h1 { font-size:21px; letter-spacing:1px; }
-            .header-center .subtitle { font-size:15px; }
-            .container { padding:20px; }
+            body { padding:10px; }
+            .header {
+                padding:16px 14px; min-height:auto; gap:8px;
+                border-radius:12px;
+            }
+            .header-logo { height:54px; width:54px; }
+            .header-center { padding:0 6px; min-width:0; }
+            .header-center h1 { font-size:17px; letter-spacing:0.5px; }
+            .header-center h1::after { width:60px; margin-top:7px; }
+            .header-center .subtitle { font-size:12px; letter-spacing:0.5px; }
+            .container { padding:18px 16px; border-radius:12px; }
+            /* iOS zooms in on focus when input font is <16px — set 16px to stop it. */
+            input, select, textarea, .searchable-input { font-size:16px; }
+            /* Let the two-button rows wrap rather than overflow on tight widths. */
+            .mode-delivery-container { flex-wrap:wrap; }
+            .mode-option { flex:1 1 140px; }
+        }
+        /* Very narrow phones: stack so the title never gets crushed. */
+        @media (max-width: 380px) {
+            .header { flex-direction:column; }
+            .header-logo { height:50px; width:50px; }
+            .header-center h1 { font-size:18px; }
         }
     </style>
 </head>
@@ -418,6 +450,18 @@
             <label class="mode-option">
                 <input type="radio" name="modeOfDelivery" value="Online">
                 <span class="mode-text">Online</span>
+            </label>
+        </div>
+
+        <div class="field-label">SEMESTER *</div>
+        <div class="mode-delivery-container">
+            <label class="mode-option">
+                <input type="radio" name="semester" value="First Semester" required>
+                <span class="mode-text">First Semester</span>
+            </label>
+            <label class="mode-option">
+                <input type="radio" name="semester" value="Second Semester">
+                <span class="mode-text">Second Semester</span>
             </label>
         </div>
 
@@ -841,6 +885,7 @@ function validateForm() {
     });
     if (!document.querySelector('input[name="classLevel"]:checked')) { alert('Select class level'); ok = false; }
     if (!document.querySelector('input[name="modeOfDelivery"]:checked')) { alert('Select mode of delivery'); ok = false; }
+    if (!document.querySelector('input[name="semester"]:checked')) { alert('Select semester'); ok = false; }
     if (!document.querySelector('input[name="attendance"]:checked')) { alert('Select attendance'); ok = false; }
     return ok;
 }
@@ -860,6 +905,9 @@ function prepareFormData() {
 
     const mod = document.querySelector('input[name="modeOfDelivery"]:checked');
     if (mod) data.modeOfDelivery = mod.value;
+
+    const sem = document.querySelector('input[name="semester"]:checked');
+    if (sem) data.semester = sem.value;
 
     // Staff ID (hidden field — ensure it's included)
     data.staffId = document.getElementById('staffIdHidden').value;
