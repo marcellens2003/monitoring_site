@@ -467,19 +467,20 @@
 
         <div class="field-label">CLASS LEVEL *</div>
         <div class="radio-container">
-            <label><input type="radio" name="classLevel" value="100" required> Level 100</label><br>
-            <label><input type="radio" name="classLevel" value="200"> Level 200</label><br>
-            <label><input type="radio" name="classLevel" value="300"> Level 300</label><br>
-            <label><input type="radio" name="classLevel" value="400"> Level 400</label><br>
-            <label><input type="radio" name="classLevel" value="500"> Level 500</label><br>
-            <label><input type="radio" name="classLevel" value="800"> Level 800</label>
+            <label><input type="radio" name="classLevel" value="700" required> Level 700</label><br>
+            <label><input type="radio" name="classLevel" value="800"> Level 800</label><br>
+            <label><input type="radio" name="classLevel" value="850"> Level 850</label><br>
+            <label><input type="radio" name="classLevel" value="900"> Level 900</label>
         </div>
 
         <div class="field-label">DATE OF MONITORING *</div>
         <input type="date" id="monitorDate" name="monitorDate" required>
 
         <div class="field-label">TIME OF MONITORING *</div>
-        <input type="time" id="monitorTime" name="monitorTime" required>
+        <div class="duration-display" id="monitorTimeDisplay">
+            <span id="monitorTimeText">—</span>
+        </div>
+        <input type="hidden" id="monitorTime" name="monitorTime">
 
         <div class="field-label">CLASS START TIME *</div>
         <input type="time" id="startTime" name="startTime" required>
@@ -802,8 +803,24 @@ function populateProgramDropdown() {
 }
 
 function setDefaultDate() {
+    const now = new Date();
     const d = document.getElementById('monitorDate');
-    if (d) d.value = new Date().toISOString().split('T')[0];
+    if (d) d.value = now.toISOString().split('T')[0];
+
+    // Time of monitoring = current system time, captured once on load.
+    // Stored in 24h HH:MM for the hidden submit field; shown in a friendly
+    // read-only display so the monitor can't edit it.
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const timeField = document.getElementById('monitorTime');
+    const timeText  = document.getElementById('monitorTimeText');
+    if (timeField) timeField.value = hh + ':' + mm;
+    if (timeText) {
+        // 12-hour display, e.g. "2:05 PM"
+        let h12 = now.getHours() % 12; if (h12 === 0) h12 = 12;
+        const ampm = now.getHours() < 12 ? 'AM' : 'PM';
+        timeText.textContent = h12 + ':' + mm + ' ' + ampm;
+    }
 }
 
 // ========== DURATION CALCULATION ==========
@@ -845,7 +862,7 @@ function calculateDuration() {
 }
 
 // ========== FORM SUBMISSION & VALIDATION ==========
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwh4BdCwKa9lNscSXt0JESw3qzXWxc5a5McY1MeJyIT9qrBEcVc_9CgsSVZzUTB0Oz7/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJk2xPi1GjW858JJZEKh3J783facWjEKzyIFvQMapeOLZPf6cM0mgVlrv-R0qf0M6G/exec';
 
 // Must EXACTLY match the FORM_SECRET script property in Code.gs.
 // NOTE: this is visible in page source — it stops casual abuse, not a
@@ -884,6 +901,7 @@ function validateForm() {
         }
     });
     if (!document.querySelector('input[name="classLevel"]:checked')) { alert('Select class level'); ok = false; }
+    if (!document.getElementById('monitorTime').value) { setDefaultDate(); }  // re-capture if somehow empty
     if (!document.querySelector('input[name="modeOfDelivery"]:checked')) { alert('Select mode of delivery'); ok = false; }
     if (!document.querySelector('input[name="semester"]:checked')) { alert('Select semester'); ok = false; }
     if (!document.querySelector('input[name="attendance"]:checked')) { alert('Select attendance'); ok = false; }
